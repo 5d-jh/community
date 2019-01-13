@@ -1,8 +1,10 @@
 'use strict';
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true})
 const Model = require('./model'); //users
@@ -15,45 +17,57 @@ router.use(session({
     resave: false,
     saveUninitialized: true
 }));
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.use(new LocalStrategy((username, password, done) => {
+    Model.findOne({username, password}, (err, doc) => {
+        if (err) return done(err);
+        
+        if (!doc) {
+            return done(null, false, {message: "user does not exists"});
+        }
+        return done(null, doc);
+    });
+}));
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+});
+passport.deserializeUser((id, done) => {
+    Model.findById(id, (err, user) => {
+        done(err, user);
+    });
+})
 
 router.post('/create', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    Model.create({username, password}, (err) => {
+    const object = {username, password}
+    Model.findOneAndUpdate(object, object, {upsert: true}, (err, doc) => {
         if (err) console.error(err);
 
-        res.status(200).json('user creation succeed');
-    });
-});
-
-router.post('/login', (req, res, next) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    Model.findOne({username, password}, (err, data) => {
-        if (err) console.error(err);
-        
-        if (!data) {
-            return res.status(401).json("user login failed");
+        if (doc) {
+            return res.status(409).json("user already exists");
         }
-
-        req.session.username = username;
-        req.session.password = password;
-        res.status(200).json("user login succeed");
+        res.status(200).json("user creation succeed");
     });
 });
 
-router.get('/logout', (req, res, next) => {
-    req.session.destroy((err) => {
-        if (err) console.error(err);
+router.post('/login', passport.authenticate('local'), (req, res) => {
+    res.status(200).json("user login succeed");
+});
 
-        res.status(200).json("user logout succeed");
-    });
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.status(200).json("user logout succeed");
 });
 
 router.get('/sessioninfo', (req, res) => {
+    if (!req.session.passport) {
+        return res.status(404).json("session info not found");
+    }
     res.json({
-        username: req.session.username,
-        password: req.session.password
+        userid: req.session.passport.user
     });
 });
 
