@@ -1,22 +1,15 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
-mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true})
 const Model = require('./model'); //users
 
 const router = express.Router();
 
 router.use(bodyParser.json());
-router.use(session({
-    secret: '!@#%^FM',
-    resave: false,
-    saveUninitialized: true
-}));
+
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -25,7 +18,7 @@ passport.use(new LocalStrategy((username, password, done) => {
         if (err) return done(err);
         
         if (!doc) {
-            return done(null, false, {message: "user does not exists"});
+            return done(null, false, {message: "user not exists"});
         }
         return done(null, doc);
     });
