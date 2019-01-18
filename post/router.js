@@ -43,4 +43,30 @@ router.get('/recent/:range', (req, res) => {
     });
 });
 
+router.get('/:id', (req, res) => {
+    Model.findById(req.params.id, (err, post) => {
+        if (err) console.error(err);
+
+        res.json(post);
+    });
+});
+
+router.delete('/:postId', (req, res) => {
+    if (!req.session.passport) {
+        return res.status(403).json("session info not found");
+    }
+    const condition = {
+        _id: req.params.postId,
+        user: req.session.passport.user
+    };
+    Model.findOneAndDelete(condition, (err, doc) => {
+        if (err) console.error(err);
+        
+        if (!doc) {
+            return res.status(403).json("forbidden");
+        }
+        res.status(200).json("post deletion succeed");
+    });
+});
+
 module.exports = router;
