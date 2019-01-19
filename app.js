@@ -5,6 +5,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const cors = require('cors');
+const os = require('os');
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
@@ -12,7 +13,7 @@ const UserModel = require('./user/model');
 
 const app = express();
 
-app.listen(8080);
+app.listen(os.platform() === 'darwin' ? 8080 : 80);
 app.use(cors());
 
 app.use(session({
