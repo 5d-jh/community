@@ -2,35 +2,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
 
 const Model = require('./model'); //users
 
 const router = express.Router();
 
 router.use(bodyParser.json());
-
-router.use(passport.initialize());
-router.use(passport.session());
-
-passport.use(new LocalStrategy((username, password, done) => {
-    Model.findOne({username, password}, (err, doc) => {
-        if (err) return done(err);
-        
-        if (!doc) {
-            return done(null, false, {message: "user not exists"});
-        }
-        return done(null, doc);
-    });
-}));
-passport.serializeUser((user, done) => {
-    done(null, user._id);
-});
-passport.deserializeUser((id, done) => {
-    Model.findById(id, (err, user) => {
-        done(err, user);
-    });
-})
 
 router.post('/create', (req, res) => {
     const username = req.body.username;

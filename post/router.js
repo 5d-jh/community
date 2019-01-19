@@ -1,6 +1,5 @@
 'use strict';
 const express = require('express');
-const passport = require('passport');
 const bodyParser = require('body-parser');
 
 const Model = require('./model');
@@ -8,9 +7,6 @@ const Model = require('./model');
 const router = express.Router();
 
 router.use(bodyParser.json());
-
-router.use(passport.initialize());
-router.use(passport.session());
 
 router.post('/create', (req, res) => {
     if (!req.session.passport) {
