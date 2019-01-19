@@ -25,6 +25,27 @@ router.post('/create', (req, res) => {
     });
 });
 
+router.post('/comment/:postId', (req, res) => {
+    if (!req.session.passport) {
+        return res.status(403).json("forbidden");
+    }
+
+    Model.findByIdAndUpdate(req.params.postId, {
+        $push: {
+            comments: {
+                body: req.body.body,
+                timestamp: new Date(),
+                user: req.session.passport.user
+            }
+        }
+    }, (err) => {
+        if (err) console.error(err);
+        
+        res.status(200).json("comment succefully submitted");
+    });
+});
+
+
 router.get('/recent/:range', (req, res) => {
     const range = req.params.range.split('-');
     if (range.length != 2) {
