@@ -36,8 +36,14 @@ router.get('/sessioninfo', (req, res) => {
     if (!req.session.passport) {
         return res.status(404).json("session info not found");
     }
-    res.json({
-        userid: req.session.passport.user
+
+    const projection = {
+        username: true
+    };
+    Model.findById(req.session.passport.user, projection, (err, user) => {
+        if (err) console.error(err);
+
+        res.status(200).json(user);
     });
 });
 
