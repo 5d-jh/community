@@ -1,9 +1,12 @@
 import React from 'react';
+import { hot } from 'react-hot-loader/root'
 
-export default class App extends React.Component {
+class App extends React.Component {
     render() {
         return (
-            <h1>hey</h1>
+            <h1>fffqweff</h1>
         )
     }
 }
+
+export default hot(App);

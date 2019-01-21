@@ -5,7 +5,10 @@ import session from 'express-session';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import cors from 'cors';
+import webpack from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
+import process from 'process';
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
@@ -13,7 +16,26 @@ const UserModel = require('./user/model');
 
 const app = express();
 
-app.listen(os.platform() === 'darwin' ? 8080 : 80);
+const port = os.platform() === 'darwin' ? 8080 : 80;
+
+if (process.env.NODE_ENV === 'development') {
+    const compiled = webpack(require('../webpack.dev.config'));
+    const devServer = new WebpackDevServer(compiled, {
+        hot: true,
+        filename: 'bundle.js',
+        publicPath: '/',
+        historyApiFallback: true,
+        contentBase: './public',
+        proxy: {
+            '**': 'http://localhost:' + port
+        }
+    });
+    devServer.listen(3000, () => {
+        console.log('http://localhost:3000');
+    })
+}
+
+app.listen(port);
 app.use(cors());
 
 app.use(session({
