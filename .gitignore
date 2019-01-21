@@ -61,3 +61,5 @@ typings/
 .next
 
 ecosystem.config.js
+
+build/
