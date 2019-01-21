@@ -10,6 +10,9 @@ import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
 import process from 'process';
 
+import UserRouter from './user/router';
+import PostRouter from './post/router';
+
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
 const UserModel = require('./user/model');
@@ -66,5 +69,5 @@ passport.deserializeUser((id, done) => {
 });
 
 app.use('/', express.static(__dirname + '/../public'));
-app.use('/api/user', require('./user/router'));
-app.use('/api/post', require('./post/router'));
+app.use('/api/user', UserRouter);
+app.use('/api/post', PostRouter);

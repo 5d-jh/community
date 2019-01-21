@@ -1,9 +1,9 @@
 'use strict';
-const express = require('express');
-const bodyParser = require('body-parser');
-const passport = require('passport');
+import express from 'express';
+import bodyParser from 'body-parser';
+import passport from 'passport';
 
-const Model = require('./model'); //users
+import Model from './model'; //users
 
 const router = express.Router();
 
@@ -47,4 +47,4 @@ router.get('/sessioninfo', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

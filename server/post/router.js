@@ -1,8 +1,8 @@
 'use strict';
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
 
-const Model = require('./model');
+import Model from './model';
 
 const router = express.Router();
 
@@ -86,4 +86,4 @@ router.delete('/:postId', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;
