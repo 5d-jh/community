@@ -1,5 +1,5 @@
 {
-  "name": "community-backend",
+  "name": "community",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -13,9 +13,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/5d-jh/community-backend/issues"
+    "url": "https://github.com/5d-jh/community/issues"
   },
-  "homepage": "https://github.com/5d-jh/community-backend#readme",
+  "homepage": "https://github.com/5d-jh/community#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
