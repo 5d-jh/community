@@ -2,7 +2,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import Model from './model';
+const Model = require('./model');
 
 const router = express.Router();
 
@@ -12,9 +12,28 @@ router.post('/create', (req, res) => {
     if (!req.session.passport) {
         return res.status(403).json("session info not found");
     }
+
+    const postBody = req.body.body;
+    let omittedArray = postBody.split(' ');
+    if (omittedArray.length > 0) {
+        omittedArray = omittedArray.slice(0, 10);
+    }
+
+    let omittedString = '';
+    for (const i in omittedArray) {
+        omittedString += omittedArray[i] + ' ';
+    }
+
+    if (omittedString.length > 121) {
+        omittedString = omittedString.slice(0, 120);
+    }
+
     const doc = {
         title: req.body.title,
-        body: req.body.body,
+        body: {
+            preview: omittedString,
+            detail: req.body.body
+        },
         timestamp: new Date(),
         user: req.session.passport.user
     };

@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 
-export default mongoose.model('post', new mongoose.Schema({
+module.exports = mongoose.model('post', new mongoose.Schema({
     title: String,
-    body: String,
+    body: {
+        preview: String,
+        detail: String
+    },
     timestamp: Date,
     user: mongoose.Schema.Types.ObjectId,
-    category: String,
+    tag: String,
     comments: [{
         body: String,
         timestamp: Date,

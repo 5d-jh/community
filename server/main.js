@@ -15,7 +15,7 @@ import PostRouter from './post/router';
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
-const UserModel = require('./user/model');
+import UserModel from './user/model';
 
 const app = express();
 
