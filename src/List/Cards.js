@@ -18,15 +18,18 @@ export class ArticleCard extends React.Component {
     }
 
     render() {
-        const { title, body } = this.props;
+        const { title, body, postId } = this.props;
 
         return (
             <Store.Consumer>
                 {store => (
-                    <Card onClick={store.updateDetailViewPost(title, body)}>
+                    <Card onClick={store.updateDetailViewPost(title, postId)} style={{
+                        marginBottom: '5px',
+                        cursor: 'pointer'
+                    }}>
                         <CardBody>
                             <CardTitle><h3>{title}</h3></CardTitle>
-                            <CardText>{body}</CardText>
+                            <CardText>{body}...</CardText>
                         </CardBody>
                     </Card>
                 )}

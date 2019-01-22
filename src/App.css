@@ -12,6 +12,7 @@
 }
 
 .main-grid__card-list {
+    padding-top: 10px;
     flex: 3;
     overflow-y: scroll;
     padding-left: 10px;
@@ -19,6 +20,7 @@
 }
 
 .main-grid__post-detail {
+    padding-top: 10px;
     flex: 7;
     overflow-y: scroll;
     padding-right: 10px;

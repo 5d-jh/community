@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArticleCard, PhotoCard, SnippetCard } from './Cards';
+import './CardsList.css';
 
 export default class CardsList extends React.Component {
     state = {
@@ -26,7 +27,7 @@ export default class CardsList extends React.Component {
         return (
             <div className="card-list__grid">
                 {posts.map((post, i) => (
-                    <ArticleCard key={i} title={post.title} body={post.body} />
+                    <ArticleCard key={i} title={post.title} body={post.body.preview} postId={post._id} />
                 ))}
             </div>  
         )

@@ -1,6 +1,6 @@
 // const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
 
-odule.exports = {
+module.exports = {
     entry: './src/index.js',
     output: {
         path: __dirname + '/public',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root'
 import CardsList from './List/CardsList';
-import NavigationBar from './NavigationBar';
+import NavigationBar from './Navbar/NavigationBar';
 import PostDetail from './Post/PostDetail';
 import Store from './store';
 import './App.css';
@@ -10,11 +10,15 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.updateDetailViewPost = (title, body) => {
+        this.updateDetailViewPost = (title, postId) => {
             return () => {
-                this.setState({
-                    detailViewTitle: title,
-                    detailViewBody: body
+                fetch('http://localhost:8080/api/post/'+postId)
+                .then(data => data.json())
+                .then(post => {
+                    this.setState({
+                        detailViewTitle: title,
+                        detailViewBody: post.body.detail
+                    });
                 });
             }
         }
@@ -22,18 +26,40 @@ class App extends React.Component {
         this.state = {
             detailViewTitle: '',
             detailViewBody: '',
+            loggedIn: false,
+            username: null,
             updateDetailViewPost: this.updateDetailViewPost
         };
     }
 
-    render() {
-        console.log(this.state.detailViewTitle)
+    getSessionUserInfo = () => {
+        console.log('sessioninfo');
 
+        const url = 'http://localhost:3000/api/user/sessioninfo';
+        fetch(url)
+        .then(data => data.json())
+        .then(userInfo => {
+            if (userInfo._id && userInfo.username) {
+                
+                
+                this.setState({
+                    loggedIn: true,
+                    username: userInfo.username
+                })   
+            }
+        })
+    }
+
+    componentDidMount() {
+        this.getSessionUserInfo();
+    }
+
+    render() {
         return (
             <div className="main-grid">
                 <Store.Provider value={this.state}>
                     <div className="main-grid__navbar">
-                        <NavigationBar />
+                        <NavigationBar getSessionUserInfo={this.getSessionUserInfo} />
                     </div>
                     <div className="main-grid__flex">
                         <div className="main-grid__card-list">
