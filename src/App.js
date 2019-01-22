@@ -1,8 +1,8 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root'
-import CardsList from './CardsList';
+import CardsList from './List/CardsList';
 import NavigationBar from './NavigationBar';
-import PostDetail from './PostDetail';
+import PostDetail from './Post/PostDetail';
 import './App.css';
 
 class App extends React.Component {

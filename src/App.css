@@ -1,18 +1,25 @@
 .main-grid__navbar {
-    height: 56px;
+    height: 61px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+
 }
 
 .main-grid__flex {
     display: flex;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 61px);
 }
 
 .main-grid__card-list {
     flex: 3;
     overflow-y: scroll;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .main-grid__post-detail {
     flex: 7;
     overflow-y: scroll;
+    padding-right: 10px;
 }

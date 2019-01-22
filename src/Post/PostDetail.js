@@ -5,8 +5,8 @@ export default class PostDetail extends React.Component {
     render() {
         return (
             <Card>
-                <CardTitle><h1>asdf</h1></CardTitle>
                 <CardBody>
+                <CardTitle><h1>asdf</h1></CardTitle>
                     asdf
                 </CardBody>
             </Card>
