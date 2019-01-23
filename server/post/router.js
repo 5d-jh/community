@@ -70,6 +70,16 @@ export default function(io) {
         });
     });
 
+    router.get('/comments/:postId', (req, res) => {
+        const projection = {
+            comments: true
+        };
+        Model.findById(req.params.postId, projection, (err, comments) => {
+            if (err) console.error(err);
+
+            res.status(200).json(comments.comments);
+        });
+    });
 
     router.get('/recent/:range', (req, res) => {
         const range = req.params.range.split('-');
@@ -78,10 +88,14 @@ export default function(io) {
         }
         range[0] = parseInt(range[0]);
         range[1] = parseInt(range[1]);
-        Model.find({}, null, {skip: range[0], limit: range[1]}, (err, docs) => {
+        Model.find({}, null, {skip: range[1], limit: range[0]}).lean().exec((err, docs) => {
             if (err) console.error(err);
 
-            res.json(docs);
+            res.json(docs.reverse());
+        });
+
+        Model.find({}, null, {skip: range[1], limit: range[0]}, (err, docs) => {
+            
         });
     });
 
