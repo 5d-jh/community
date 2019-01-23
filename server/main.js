@@ -9,6 +9,7 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
 import process from 'process';
+import socketio from 'socket.io';
 
 import UserRouter from './user/router';
 import PostRouter from './post/router';
@@ -33,9 +34,9 @@ if (process.env.NODE_ENV === 'development') {
             '**': 'http://localhost:' + port
         }
     });
-    devServer.listen(3000, () => {
+    var io = socketio(devServer.listen(3000, () => {
         console.log('http://localhost:3000');
-    })
+    }));
 }
 
 app.listen(port);
@@ -70,4 +71,4 @@ passport.deserializeUser((id, done) => {
 
 app.use('/', express.static(__dirname + '/../public'));
 app.use('/api/user', UserRouter);
-app.use('/api/post', PostRouter);
+app.use('/api/post', PostRouter(io));
