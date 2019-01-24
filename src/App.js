@@ -16,16 +16,23 @@ class App extends React.Component {
                 .then(data => data.json())
                 .then(post => {
                     this.setState({
+                        detailViewLoaded: true,
+                        detailViewPostId: post._id,
+                        detailViewUser: post.user,
                         detailViewTitle: title,
-                        detailViewBody: post.body.detail
+                        detailViewBody: post.body.detail,
+                        detailViewComments: post.comments
                     });
                 });
             }
         }
 
         this.state = {
+            detailViewLoaded: false,
+            detailViewPostId: null,
             detailViewTitle: '',
             detailViewBody: '',
+            detailViewComments: [],
             loggedIn: false,
             username: null,
             updateDetailViewPost: this.updateDetailViewPost

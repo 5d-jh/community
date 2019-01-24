@@ -12,11 +12,11 @@ export default class CardsList extends React.Component {
     }
 
     this.fetchPostByRecent = () => {
-      fetch('http://localhost:8080/api/post/recent/0-30')
+      fetch('http://localhost:3000/api/post/recent/0-10')
       .then(data => data.json())
       .then(posts => {
         this.setState({
-          posts: [...posts.reverse(), ...this.state.posts]
+          posts: [...posts, ...this.state.posts]
         });
       });
     }
@@ -31,7 +31,7 @@ export default class CardsList extends React.Component {
 
     return (
       <div>
-        <PostSubmitForm fpbr={this.fetchPostByRecent} />
+        <PostSubmitForm onSubmitPost={this.fetchPostByRecent} />
         <div className="card-list__grid">
           {posts.map((post, i) => (
             <ArticleCard key={i} title={post.title} body={post.body.preview} postId={post._id} />

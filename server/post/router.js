@@ -9,7 +9,6 @@ export default function(io) {
 
     router.use(bodyParser.json());
 
-    io.on('connection', () => {
         router.post('/create', (req, res) => {
             if (!req.session.passport) {
                 return res.status(403).json("session info not found");
@@ -41,12 +40,13 @@ export default function(io) {
             };
             Model.create(doc, (err) => {
                 if (err) console.error(err);
-                
-                io.emit('new-post-update', doc.title);
-                res.status(200).json("post succefully submitted");
-            });
-        });
 
+                io.on('connection', () => {
+                    io.emit('new-post-update', doc.title);
+                });
+                
+                res.status(200).json("post succefully submitted");
+        });
     });
     
 
@@ -77,7 +77,7 @@ export default function(io) {
         Model.findById(req.params.postId, projection, (err, comments) => {
             if (err) console.error(err);
 
-            res.status(200).json(comments.comments);
+            res.status(200).json(comments ? comments.comments : []);
         });
     });
 

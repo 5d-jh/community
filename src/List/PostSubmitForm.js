@@ -2,7 +2,6 @@ import React from 'react';
 import { 
   Form, 
   FormGroup,
-  Label,
   Input, 
   Nav, 
   NavItem, 
@@ -27,7 +26,7 @@ export default class PostSubmitForm extends React.Component {
           body: this.state.inputBody || 'everybody'
         })
       })
-      .then(props.fpbr);
+      .then(props.onSubmitPost);
     }
 
     this.forms = {
