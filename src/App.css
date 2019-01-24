@@ -11,14 +11,6 @@
     height: calc(100vh - 61px);
 }
 
-.main-grid__card-list {
-    padding-top: 10px;
-    flex: 3;
-    overflow-y: scroll;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
 .main-grid__post-detail {
     padding-top: 10px;
     flex: 7;

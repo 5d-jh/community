@@ -69,9 +69,7 @@ class App extends React.Component {
                         <NavigationBar getSessionUserInfo={this.getSessionUserInfo} />
                     </div>
                     <div className="main-grid__flex">
-                        <div className="main-grid__card-list">
-                            <CardsList />
-                        </div>
+                        <CardsList />
                         <div className="main-grid__post-detail">
                             <PostDetail />
                         </div>

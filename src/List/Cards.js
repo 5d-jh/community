@@ -18,12 +18,12 @@ export class ArticleCard extends React.Component {
     }
 
     render() {
-        const { title, body, postId } = this.props;
+        const { title, body, postId, id } = this.props;
 
         return (
             <Store.Consumer>
                 {store => (
-                    <Card onClick={store.updateDetailViewPost(title, postId)} style={{
+                    <Card id={id} onClick={store.updateDetailViewPost(title, postId)} style={{
                         marginBottom: '5px',
                         cursor: 'pointer'
                     }}>
