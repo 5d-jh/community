@@ -32,6 +32,17 @@ router.get('/logout', (req, res) => {
     res.status(200).json("user logout succeed");
 });
 
+router.get('/info/:userId', (req, res) => {
+    const projection = {
+        username: true
+    };
+    Model.findById(req.params.userId, projection, (err, user) => {
+        if (err) console.error(err);
+
+        res.status(200).send(user.username);
+    });
+});
+
 router.get('/sessioninfo', (req, res) => {
     if (!req.session.passport) {
         return res.status(404).json("session info not found");
