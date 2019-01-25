@@ -77,7 +77,13 @@ export default function(io) {
         }
         range[0] = parseInt(range[0]);
         range[1] = parseInt(range[1]);
-        Model.find({}).sort('-timestamp').skip(range[0]).limit(range[1]).lean()
+
+        const projection = {
+            'body.detail': false,
+            comments: false
+        };
+
+        Model.find({}, projection).sort('-timestamp').skip(range[0]).limit(range[1]).lean()
         .exec((err, docs) => {
             if (err) console.error(err);
 
@@ -87,6 +93,7 @@ export default function(io) {
 
     router.get('/:id', (req, res) => {
         const projection = {
+            'body': true,
             'body.preview': true,
             'body.detail': true,
             title: true,
@@ -96,17 +103,23 @@ export default function(io) {
             'comments._id': true,
             'comments.timestamp': true,
             'comments.user': true,
-            _id: true,
             timestamp: true
         };
         for (const i in req.body) {
             if (typeof req.body[i] === 'string') {
+                if (req.body[i] === 'body') {
+                    delete projection['body.preview'];
+                    delete projection['body.detail'];
+                }
+                if (req.body[i] === 'comments') {
+                    delete projection['comments.body'];
+                    delete projection['comments._id'];
+                    delete projection['comments.timestamp'];
+                    delete projection['comments.user'];
+                }
                 delete projection[req.body[i]];
             }
         }
-
-        console.log(projection);
-        
 
         Model.findById(req.params.id, projection, (err, post) => {
             if (err) console.error(err);
