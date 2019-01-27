@@ -10,6 +10,8 @@ import { Card,
   Input
 } from 'reactstrap';
 import Store from '../store';
+import { Query } from 'react-apollo';
+import { POST } from '../queries';
 
 export default class PostDetail extends React.Component {
   state = {
@@ -40,64 +42,57 @@ export default class PostDetail extends React.Component {
   }
 
   render() {
+    const { match } = this.props;
+
     return (
-      <Store.Consumer>
-        {store => {
-          const { 
-            detailViewLoaded,
-            detailViewPostId,
-            detailViewTitle, 
-            detailViewUser, 
-            detailViewBody, 
-            detailViewComments
-          } = store;
+      <Query query={POST(match.params.postId)}>
+        {({loading, data, error}) => {
+          if (loading) {
+            return "loading";
+          }
 
-          const { comments } = this.state;
+          if (data) {
+            const { post } = data;
 
-          console.log(comments.length);
-          
-          const _comments = comments.length != 0 ? comments : detailViewComments;
-
-          return (
-            detailViewLoaded ? (
-            <div>
-              {console.log(detailViewLoaded)}
-              <h1>{detailViewTitle}</h1>
-              <p>사용자: {detailViewUser}</p>
-              <Card>
-                <CardBody>
-                  <CardText>
-                    {detailViewBody}
-                  </CardText>
-                </CardBody>
-              </Card>
-              <Jumbotron style={{
-                margin: 0,
-                padding: '10px'
-              }}>
-                <Form onSubmit={this.submitComment(detailViewPostId)} style={{
-                  marginBottom: '10px'
+            return (
+              <React.Fragment>
+                <h1>{post.title}</h1>
+                <Card>
+                  <CardBody>
+                    <CardText>
+                      {post.body.detail}
+                    </CardText>
+                  </CardBody>
+                </Card>
+                <Jumbotron style={{
+                  margin: 0,
+                  padding: '10px'
                 }}>
-                  <Input type="text" onChange={this.onCommentChange} placeholder="press enter to submit" style={{
-                    backgroundColor: 'transparent'
-                  }} />
-                </Form>
-                <ListGroup>
-                  {_comments.map((comment, i) => (
-                    <ListGroupItem key={i}>
-                      <ListGroupItemHeading style={{
-                        fontSize: '13px'
-                      }}>
-                        사용자: {comment.user}
-                      </ListGroupItemHeading>
-                      {comment.body}
-                    </ListGroupItem>
-                  ))}
-                </ListGroup>
-              </Jumbotron>
-            </div> ) : null
-        )}}
-      </Store.Consumer>
+                  <Form /* onSubmit={this.submitComment(detailViewPostId)}*/ style={{
+                    marginBottom: '10px'
+                  }}>
+                    <Input type="text" onChange={this.onCommentChange} placeholder="press enter to submit" style={{
+                      backgroundColor: 'transparent'
+                    }} />
+                  </Form>
+                  <ListGroup>
+                    {post.comments.map((comment, i) => (
+                      <ListGroupItem key={i}>
+                        <ListGroupItemHeading style={{
+                          fontSize: '13px'
+                        }}>
+                          사용자: {comment.user}
+                        </ListGroupItemHeading>
+                        {comment.body}
+                      </ListGroupItem>
+                    ))}
+                  </ListGroup>
+                </Jumbotron>
+              </React.Fragment>
+            )
+          }
+        }}
+      </Query>
     )
   }
 }

@@ -1,6 +1,8 @@
 'use strict';
 import mongoose from 'mongoose';
 import express from 'express';
+import graphqlHTTP from 'express-graphql';
+import { buildSchema } from 'graphql';
 import session from 'express-session';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
@@ -9,14 +11,11 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
 import process from 'process';
-import socketio from 'socket.io';
-
-import UserRouter from './user/router';
-import PostRouter from './post/router';
+import gql from 'graphql-tag';
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
-import UserModel from './user/model';
+import UserModel from './model-user';
 
 const app = express();
 
@@ -34,9 +33,9 @@ if (process.env.NODE_ENV === 'development') {
             '**': 'http://localhost:' + port
         }
     });
-    var io = socketio(devServer.listen(3000, () => {
+    devServer.listen(3000, () => {
         console.log('http://localhost:3000');
-    }));
+    });
 }
 
 app.listen(port);
@@ -61,14 +60,76 @@ passport.use(new LocalStrategy((username, password, done) => {
     });
 }));
 passport.serializeUser((user, done) => {
+    
     done(null, user._id);
 });
 passport.deserializeUser((id, done) => {
+    console.log('dserializeUser')
     UserModel.findById(id, (err, user) => {
         done(err, user);
     });
 });
 
+// import { Query } from './resolvers';
+
+const schema = buildSchema(`
+    type Comment {
+        body: String!,
+        timestamp: String!,
+        user: String!
+    }
+
+    type PostBody {
+        preview: String,
+        detail: String!
+    }
+
+    type UserBody {
+        username: String!
+    }
+    
+    type Post {
+        _id: String
+        title: String,
+        body: PostBody,
+        user: String,
+        tag: String,
+        comments: [Comment] 
+    }
+
+    type Query {
+        postsByRecent(range: String!): [Post]!
+        post(id: String!): Post
+        userSessionInfo: UserBody
+    }
+
+    type Mutation {
+        createPost(
+            title: String!, 
+            body: String!
+        ): Boolean!
+
+        createComment(postId: String!): Boolean!
+
+        createUser(
+            username: String!,
+            password: String!
+        ): Boolean!
+    }
+`);
+
+import resolvers from './resolvers';
+
 app.use('/', express.static(__dirname + '/../public'));
-app.use('/api/user', UserRouter);
-app.use('/api/post', PostRouter(io));
+app.use('/api', graphqlHTTP({
+    schema,
+    rootValue: resolvers,
+    graphiql: process.env.NODE_ENV === 'development',
+}));
+app.use('/api/login', passport.authenticate('local'), (_, res) => {
+    return res.json("user login succeed");
+});
+app.use('/api/logout', (req) => {
+    req.logout();
+    return res.json("user logout succeed");
+});

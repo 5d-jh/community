@@ -1,83 +1,35 @@
 import React from 'react';
+import client from './apollo-client';
 import { hot } from 'react-hot-loader/root'
-import CardsList from './List/CardsList';
-import NavigationBar from './Navbar/NavigationBar';
+import { Link, HashRouter as Router, Route} from 'react-router-dom';
+import { ApolloProvider } from 'react-apollo';
+import MainList from './MainList/MainList';
 import PostDetail from './Post/PostDetail';
-import Store from './store';
+import NavigationBar from './Navbar/NavigationBar';
 import './App.css';
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.updateDetailViewPost = (title, postId) => {
-            return () => {
-                fetch('http://localhost:8080/api/post/'+postId)
-                .then(data => data.json())
-                .then(post => {
-                    this.setState({
-                        detailViewLoaded: true,
-                        detailViewPostId: post._id,
-                        detailViewUser: post.user,
-                        detailViewTitle: title,
-                        detailViewBody: post.body.detail,
-                        detailViewComments: post.comments
-                    });
-                });
-            }
-        }
-
-        this.state = {
-            detailViewLoaded: false,
-            detailViewPostId: null,
-            detailViewTitle: '',
-            detailViewBody: '',
-            detailViewComments: [],
-            loggedIn: false,
-            username: null,
-            updateDetailViewPost: this.updateDetailViewPost
-        };
-    }
-
-    getSessionUserInfo = () => {
-        console.log('sessioninfo');
-
-        const url = 'http://localhost:3000/api/user/sessioninfo';
-        fetch(url)
-        .then(data => data.json())
-        .then(userInfo => {
-            if (userInfo._id && userInfo.username) {
-                
-                
-                this.setState({
-                    loggedIn: true,
-                    username: userInfo.username
-                })   
-            }
-        })
-    }
-
-    componentDidMount() {
-        this.getSessionUserInfo();
-    }
-
-    render() {
-        return (
-            <div className="main-grid">
-                <Store.Provider value={this.state}>
-                    <div className="main-grid__navbar">
-                        <NavigationBar getSessionUserInfo={this.getSessionUserInfo} />
-                    </div>
-                    <div className="main-grid__flex">
-                        <CardsList />
-                        <div className="main-grid__post-detail">
-                            <PostDetail />
-                        </div>
-                    </div>
-                </Store.Provider>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <React.Fragment>
+        <ApolloProvider client={client}>
+          <div className="main-grid__navbar">
+            <NavigationBar />
+          </div>
+          <div className="main-grid__flex">
+            <Router>
+              <React.Fragment>
+                <MainList />
+                <div className="main-grid__post-detail">
+                  <Route path={"/:postId"} component={PostDetail} />
+                </div>
+              </React.Fragment>
+            </Router>
+          </div>
+        </ApolloProvider>
+      </React.Fragment>
+    )
+  }
 }
 
 export default hot(App);

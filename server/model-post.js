@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 
 module.exports = mongoose.model('post', new mongoose.Schema({
     title: String,
