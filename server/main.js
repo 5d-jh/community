@@ -5,7 +5,8 @@ import graphqlHTTP from 'express-graphql';
 import { buildSchema } from 'graphql';
 import session from 'express-session';
 import passport from 'passport';
-import LocalStrategy from 'passport-local';
+import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
+// import LocalStrategy from 'passport-local';
 import cors from 'cors';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -49,22 +50,24 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy((username, password, done) => {
-    UserModel.findOne({username, password}, (err, doc) => {
-        if (err) return done(err);
-        
-        if (!doc) {
-            return done(null, false, {message: "user not exists"});
-        }
-        return done(null, doc);
-    });
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/auth/google/callback'
+}, (accessToken, refreshToken, profile, done) => {
+    const googleUser = {
+        username: profile.displayName,
+        email: profile.emails[0].value,
+        administrator: false
+    };
+    UserModel.findOneAndUpdate(googleUser, googleUser, {upsert: true}, (err, user) => {
+        return done(err, user);
+    })
 }));
 passport.serializeUser((user, done) => {
-    
-    done(null, user._id);
+    return done(null, user._id);
 });
 passport.deserializeUser((id, done) => {
-    console.log('dserializeUser')
     UserModel.findById(id, (err, user) => {
         done(err, user);
     });
@@ -126,10 +129,17 @@ app.use('/api', graphqlHTTP({
     rootValue: resolvers,
     graphiql: process.env.NODE_ENV === 'development',
 }));
-app.use('/api/login', passport.authenticate('local'), (_, res) => {
-    return res.json("user login succeed");
-});
-app.use('/api/logout', (req) => {
+app.get('/auth/google', passport.authenticate('google', {
+    scope: [
+        'https://www.googleapis.com/auth/plus.login',
+        'email'
+    ]
+}));
+app.get('/auth/google/callback', passport.authenticate('google', {
+    failureRedirect: 'http://localhost:3000/',
+    successRedirect: 'http://localhost:3000/'
+}));
+app.get('/auth/logout', (req, res) => {
     req.logout();
-    return res.json("user logout succeed");
-});
+    res.redirect('/');
+})
