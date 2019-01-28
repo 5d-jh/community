@@ -100,13 +100,13 @@ class Resolvers {
 
   userSessionInfo = async (_, { session }) => {
     if (!session.passport) {
-      return res.status(404).json("session info not found");
+      return;
     }
 
     const projection = {
       username: true
     };
-    await UserModel.findById(session.passport.user, projection)
+    return await UserModel.findById(session.passport.user, projection)
     .catch(err => console.error(err));
   }
 }

@@ -22,6 +22,15 @@ export const POST = (id) => {
         body {
           detail
         }
+      }
+    }
+  `;
+}
+
+export const COMMENT_LISTS = (postId) => {
+  return gql`
+    query {
+      post(id: "${postId}") {
         comments {
           body
           timestamp
@@ -31,3 +40,12 @@ export const POST = (id) => {
     }
   `;
 }
+
+export const USER_SESSION_INFO = gql`
+  query {
+    userSessionInfo {
+      username
+    }
+  }
+`;
+    
