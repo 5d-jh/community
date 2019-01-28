@@ -1,9 +1,7 @@
 .card-list {
-    padding-top: 10px;
+    padding: 10px;
     flex: 3;
     overflow-y: scroll;
-    padding-left: 10px;
-    padding-right: 10px;
 }
 
 .card-list__grid {
