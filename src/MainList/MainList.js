@@ -4,7 +4,6 @@ import { POST_LISTS } from '../queries';
 import { ArticleCard, PhotoCard, SnippetCard } from './Cards';
 import { Button } from 'reactstrap';
 import './MainList.css';
-import PostSubmitForm from './PostSubmitForm';
 
 export default class MainList extends React.Component {
   state = {
@@ -49,9 +48,6 @@ export default class MainList extends React.Component {
   }
 
   isBottom = () => {
-    console.log('wereb');
-    
-
     const cardListElement = Math.floor(document.getElementById('cardList')
       .getBoundingClientRect().bottom - 5);
     const lastElement = Math.floor(document.getElementById('cardList').lastChild
@@ -73,7 +69,7 @@ export default class MainList extends React.Component {
 
     return (
       <div className="card-list" /*onScroll={this.isBottom}*/ id="cardList">
-        <PostSubmitForm onSubmitPost={this.fetchPostByRecent} />
+        
         <div className="card-list__grid">
           {posts}
           <Button onClick={this.fetchPostsByRecent}>new</Button>

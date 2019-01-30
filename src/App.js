@@ -6,6 +6,7 @@ import { ApolloProvider } from 'react-apollo';
 import MainList from './MainList/MainList';
 import PostDetail from './Post/PostDetail';
 import NavigationBar from './Navbar/NavigationBar';
+import CreatePost from './Post/CreatePost';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -19,14 +20,11 @@ class App extends React.Component {
               <NavigationBar />
             </div>
             <div className="main-grid__flex">
-              
-                <React.Fragment>
-                  <MainList />
-                  <div className="main-grid__post-detail">
-                    <Route path={"/:postId"} component={PostDetail} />
-                  </div>
-                </React.Fragment>
-              
+              <Route path={"/"} component={MainList} />
+              <div className="main-grid__post-detail">
+                <Route path={"/create_post"} component={CreatePost} />
+                <Route path={"/view/:postId"} component={PostDetail} />
+              </div>
             </div>
           </React.Fragment>
         </Router>

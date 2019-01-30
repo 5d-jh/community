@@ -7,10 +7,9 @@
         [
             "transform-remove-console",
             {
-                "exclude": [
-                    "error", "log"
-                ]
+                "exclude": ["error", "log"]
             }
-        ]
+        ],
+        "import-graphql"
     ]
 }

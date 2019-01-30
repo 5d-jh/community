@@ -22,7 +22,7 @@ class Resolvers {
     .catch(err => new Error(err))
   }
   
-  createPost = async ({ title, body }, { session }) => {
+  createPost = async ({ title, body }, { session }) => {  
     if (!session.passport) {
       return false;
     }
@@ -51,10 +51,9 @@ class Resolvers {
       timestamp: new Date(),
       user: session.passport.user
     };
-    await Model.create(postToSubmit)
-    .catch(err => console.error(err));
-
-    return true;
+    return await PostModel.create(postToSubmit)
+    .then(post => post._id)
+    .catch(err => err);
   }
 
   createComment = async ({ postId, body }, { session }) => {

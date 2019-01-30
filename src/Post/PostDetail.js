@@ -79,7 +79,6 @@ export default class PostDetail extends React.Component {
   shouldComponentUpdate(nextProp, nextState) {
     const { match } = this.props;
 
-    console.log(Object.keys(this.state.comments).length, Object.keys(nextState.comments).length)
     return nextState.comments.length !== this.state.comments.length ||
     nextProp.match.params.postId !== match.params.postId
   }
@@ -93,6 +92,11 @@ export default class PostDetail extends React.Component {
         {({loading, data, error}) => {
           if (loading) {
             return "loading";
+          }
+
+          if (error) {
+            console.log(error)
+            return "error";
           }
 
           if (data) {

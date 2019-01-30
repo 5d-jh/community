@@ -13,7 +13,7 @@ export class ArticleCard extends React.Component {
                 cursor: 'pointer'
             }}>
                 <CardBody>
-                    <CardTitle><Link to={`/${postId}`}><h3>{title}</h3></Link></CardTitle>
+                    <CardTitle><Link to={`/view/${postId}`}><h3>{title}</h3></Link></CardTitle>
                     <CardText>{body}...</CardText>
                 </CardBody>
             </Card>

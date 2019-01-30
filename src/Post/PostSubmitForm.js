@@ -7,42 +7,44 @@ import {
   NavItem, 
   NavLink 
 } from 'reactstrap';
+import { Mutation } from 'react-apollo';
+import { CREATE_POST } from '../queries';
 
 export default class PostSubmitForm extends React.Component {
-  constructor(props) {
-    super(props)
+  state = {
+    postTypeSelected: 'article',
+    inputTitle: null,
+    inputBody: null
+  }
 
-    this.submitPost = (event) => {
-      event.preventDefault();
+  submitForms = (formType) => {
+    const { inputTitle, inputBody } = this.state;
 
-      const url = 'http://localhost:3000/api/post/create';
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: this.state.inputTitle || 'hi',
-          body: this.state.inputBody || 'everybody'
-        })
-      })
-      .then(props.onSubmitPost);
-    }
-
-    this.forms = {
+    return {
       article: (
-        <Form onSubmit={this.submitPost}>
-          <FormGroup>
-            <Input type="text" placeholder="제목" onChange={(e) => {this.setState({inputTitle: e.target.value})}} />
-          </FormGroup>
-          <FormGroup>
-            <Input type="textarea" onChange={(e) => {this.setState({inputBody: e.target.value})}} />
-          </FormGroup>
-          <FormGroup>
-            <Input type="submit" value="글쓰기" />
-          </FormGroup>
-        </Form>
+        <Mutation 
+          mutation={CREATE_POST}
+          variables={{ title: inputTitle, body: inputBody }}
+          onCompleted={({createPost}) => {
+            window.location.replace(`/#/view/${createPost}`);
+          }}
+        >
+          {postMutation => (
+            <Form onSubmit={postMutation}>
+              <FormGroup>
+                <Input type="text" placeholder="제목" onChange={e => {this.setState({inputTitle: e.target.value})}} />
+              </FormGroup>
+              <FormGroup>
+                <Input type="textarea" onChange={e => {this.setState({inputBody: e.target.value})}} />
+              </FormGroup>
+              <FormGroup>
+                <Input type="submit" value="글쓰기" />
+              </FormGroup>
+            </Form>
+          )}
+        </Mutation>
       ),
+
       snippet: (
         <Form>
           <FormGroup>
@@ -53,6 +55,7 @@ export default class PostSubmitForm extends React.Component {
           </FormGroup>
         </Form>
       ),
+
       picture: (
         <Form>
           <FormGroup>
@@ -63,17 +66,12 @@ export default class PostSubmitForm extends React.Component {
           </FormGroup>
         </Form>
       )
-    };
+    }[formType];
   }
-
-
-  state = {
-    postTypeSelected: 'article',
-    inputTitle: null,
-    inputBody: null
-  }
-
+  
   render() {
+    const { postTypeSelected } = this.state;
+
     return (
       <div>
         <Nav className="nav-fill">
@@ -100,7 +98,7 @@ export default class PostSubmitForm extends React.Component {
           </NavItem>
         </Nav>
         <div>
-          {this.forms[this.state.postTypeSelected]}
+          {this.submitForms(postTypeSelected)}
         </div>
       </div>
     )

@@ -6,13 +6,16 @@ import { buildSchema } from 'graphql';
 import session from 'express-session';
 import passport from 'passport';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
-// import LocalStrategy from 'passport-local';
 import cors from 'cors';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
 import process from 'process';
-import gql from 'graphql-tag';
+import dotenv from 'dotenv';
+import gqlTypeDefs from './type-defs';
+import resolvers from './resolvers';
+
+dotenv.config();
 
 mongoose.connect('mongodb://localhost/community', {useNewUrlParser: true});
 
@@ -73,59 +76,9 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-// import { Query } from './resolvers';
-
-const schema = buildSchema(`
-    type Comment {
-        body: String!,
-        timestamp: String!,
-        user: String!
-    }
-
-    type PostBody {
-        preview: String,
-        detail: String!
-    }
-
-    type UserBody {
-        username: String!
-    }
-    
-    type Post {
-        _id: String
-        title: String,
-        body: PostBody,
-        user: String,
-        tag: String,
-        comments: [Comment] 
-    }
-
-    type Query {
-        postsByRecent(range: String!): [Post]!
-        post(id: String!): Post
-        userSessionInfo: UserBody
-    }
-
-    type Mutation {
-        createPost(
-            title: String!, 
-            body: String!
-        ): Boolean!
-
-        createComment(postId: String!): Boolean!
-
-        createUser(
-            username: String!,
-            password: String!
-        ): Boolean!
-    }
-`);
-
-import resolvers from './resolvers';
-
 app.use('/', express.static(__dirname + '/../public'));
 app.use('/api', graphqlHTTP({
-    schema,
+    schema: buildSchema(gqlTypeDefs),
     rootValue: resolvers,
     graphiql: process.env.NODE_ENV === 'development',
 }));
