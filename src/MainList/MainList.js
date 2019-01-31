@@ -12,47 +12,88 @@ export default class MainList extends React.Component {
     page: 0
   }
 
-  fetchPostsByRecent = async () => {
-    const { posts, page } = this.state;
+  updateNewPosts = (howmany) => {
+    const { posts } = this.state;
 
-    this.setState({
-      posts: [...posts, (
-        <Query query={POST_LISTS(`${page*10}-${(page+1)*10}`)}>
-          {({loading, data, error}) => {
-            if (error) console.error(error);
-
-            if (loading || !data) {
-              return "loading"
-            }
-
-            if (data) {
-              if (data.postsByRecent.length !== 0) {
-                this.setState({
-                  page: page + 1
+    return () => {
+      this.setState({
+        posts: [(
+          <Query query={POST_LISTS(`0-${howmany}`)}>
+            {({loading, data, error}) => {
+              if (error) console.error(error);
+  
+              if (loading || !data) {
+                return "loading"
+              }
+  
+              if (data) {
+                return data.postsByRecent.map((post, i) => {
+                  if (i === 0) {
+                    this.setState({
+                      lastCardId: post._id
+                    })
+                  }
+                  return (
+                    <ArticleCard 
+                      key={i} 
+                      id={'card'+i} 
+                      title={post.title} 
+                      body={post.body.preview} 
+                      postId={post._id} 
+                    />
+                  )
                 });
               }
+            }}
+          </Query>
+        ), ...posts]
+      });
+    }
+  }
 
-              return data.postsByRecent.map((post, i) => {
-                if (i === 0) {
+  fetchPostsByRecent = (setLastCardId) => {
+    const { posts, page } = this.state;
+
+    return () => {
+      this.setState({
+        posts: [...posts, (
+          <Query query={POST_LISTS(`${page*10}-${(page+1)*10}`)}>
+            {({loading, data, error}) => {
+              if (error) console.error(error);
+  
+              if (loading || !data) {
+                return "loading"
+              }
+  
+              if (data) {
+                if (data.postsByRecent.length !== 0) {
                   this.setState({
-                    lastCardId: post._id
-                  })
+                    page: page + 1
+                  });
                 }
-                return (
-                  <ArticleCard 
-                    key={i} 
-                    id={'card'+i} 
-                    title={post.title} 
-                    body={post.body.preview} 
-                    postId={post._id} 
-                  />
-                )
-              });
-            }
-          }}
-        </Query>
-      )]
-    });
+  
+                return data.postsByRecent.map((post, i) => {
+                  if (i === 0 && setLastCardId) {
+                    this.setState({
+                      lastCardId: post._id
+                    });
+                  }
+                  return (
+                    <ArticleCard 
+                      key={i} 
+                      id={'card'+i} 
+                      title={post.title} 
+                      body={post.body.preview} 
+                      postId={post._id} 
+                    />
+                  )
+                });
+              }
+            }}
+          </Query>
+        )]
+      });
+    }
   }
 
   isBottom = () => {
@@ -69,7 +110,8 @@ export default class MainList extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchPostsByRecent(); 
+    const setLastCardId = true;
+    this.fetchPostsByRecent(setLastCardId)(); 
   }
 
   render() {
@@ -90,17 +132,17 @@ export default class MainList extends React.Component {
 
                 if (data) {
                   return (
-                    <Button onClick={this.fetchPostsByRecent} disabled={!Boolean(data.checkNewPost.postList.length)}>
+                    <Button onClick={this.updateNewPosts(data.checkNewPost.postList.length)} disabled={!Boolean(data.checkNewPost.postList.length)}>
                       {data.checkNewPost.postList.length}개의 새 게시글
                     </Button>
                   )
                 }
               }}
             </Query>
-          ) : 'loading'}
+          ) : 'loading...'}
           
           {posts}
-          <Button onClick={this.fetchPostsByRecent}>new</Button>
+          <Button onClick={this.fetchPostsByRecent(false)}>new</Button>
         </div>
       </div>
     )
