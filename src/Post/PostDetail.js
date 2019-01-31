@@ -15,61 +15,18 @@ import { COMMENT_LISTS, CREATE_COMMENT, POST } from '../queries';
 
 export default class PostDetail extends React.Component {
   state = {
-    commentToSubmit: 'yo',
-    comments: []
-  }
-
-  fetchComments = () => {
-    const { match } = this.props;
-
-    this.setState({
-      comments: (
-        <Query query={COMMENT_LISTS(match.params.postId)}>
-          {({loading, data, error}) => {
-            if (error) console.log(error);
-
-            if (loading) {
-              return (
-                <ListGroupItem>
-                  불러오는 중..
-                </ListGroupItem>
-              )
-            }
-
-            if (data) {
-              return data.post.comments.map((comment, i) => (
-                <ListGroupItem key={i}>
-                  <ListGroupItemHeading style={{
-                    fontSize: '13px'
-                  }}>
-                    사용자: {comment.user}
-                  </ListGroupItemHeading>
-                  {comment.body}
-                </ListGroupItem>
-              ));
-            }
-          }}
-        </Query>
-      )
-    })
-  }
-
-  shouldComponentUpdate(nextProp, nextState) {
-    const { match } = this.props;
-    const { commentToSubmit } = this.state;
-
-    if (commentToSubmit !== nextState.commentToSubmit) return true;
-
-    return nextState.comments.length !== this.state.comments.length ||
-    nextProp.match.params.postId !== match.params.postId
+    commentToSubmit: null
   }
 
   render() {
     const { match } = this.props;
-    const { comments, commentToSubmit } = this.state;
+    const { commentToSubmit } = this.state;
 
     return (
-      <Query query={POST(match.params.postId)}>
+      <Query 
+        query={POST}
+        variables={{id: match.params.postId}}
+      >
         {({loading, data, error}) => {
           if (loading) {
             return "loading";
@@ -82,8 +39,6 @@ export default class PostDetail extends React.Component {
 
           if (data) {
             const { post } = data;
-
-            this.fetchComments();
 
             return (
               <div style={{
@@ -102,37 +57,65 @@ export default class PostDetail extends React.Component {
                     </CardText>
                   </CardBody>
                 </Card>
+
                 <Jumbotron style={{
                   margin: 0,
                   padding: '10px'
                 }}>
-                  <Mutation 
-                    mutation={CREATE_COMMENT}
-                    variables={{
-                      postId: match.params.postId,
-                      body: commentToSubmit
-                    }}
+                  <Query
+                    query={COMMENT_LISTS}
+                    variables={{postId: match.params.postId}}
                   >
-                    {commentMutation => (
-                      <Form onSubmit={commentMutation} style={{
-                        marginBottom: '10px'
-                      }}>
-                        <Input 
-                          type="text" 
-                          onChange={e => {this.setState({
-                            commentToSubmit: e.target.value
-                          })}} 
-                          placeholder="press enter to submit" 
-                          style={{
-                            backgroundColor: 'transparent'
-                          }} 
-                        />
-                      </Form>
-                    )}
-                  </Mutation>
-                  <ListGroup>
-                    {comments}
-                  </ListGroup>
+                    {({loading, data, error, refetch}) => {
+                      if (error) return console.log(error);
+                      if (loading) return "loading";
+
+                      if (data) {
+                        return (
+                          <React.Fragment>
+                            <Mutation 
+                              mutation={CREATE_COMMENT}
+                              variables={{
+                                postId: match.params.postId,
+                                body: commentToSubmit
+                              }}
+                              onCompleted={refetch}
+                            >
+                              {commentMutation => (
+                                <Form onSubmit={commentMutation} style={{
+                                  marginBottom: '10px'
+                                }}>
+                                  <Input 
+                                    type="text" 
+                                    onChange={e => {this.setState({
+                                      commentToSubmit: e.target.value
+                                    })}} 
+                                    placeholder="press enter to submit" 
+                                    style={{
+                                      backgroundColor: 'transparent'
+                                    }} 
+                                  />
+                                </Form>
+                              )}
+                            </Mutation>
+
+                            <ListGroup>
+                            {data.post.comments.map((comment, i) => (
+                              <ListGroupItem key={i}>
+                                <ListGroupItemHeading style={{
+                                  fontSize: '13px'
+                                }}>
+                                  사용자: {comment.user}
+                                </ListGroupItemHeading>
+                                {comment.body}
+                              </ListGroupItem>
+                            ))}
+                            </ListGroup>
+                          </React.Fragment>
+                        )
+                      }
+                    }}
+                  </Query>
                 </Jumbotron>
               </div>
             )

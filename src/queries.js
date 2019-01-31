@@ -14,36 +14,33 @@ export const POST_LISTS = (range) => {
   `;
 }
 
-export const POST = (id) => {
-  return gql`
-    query {
-      post(id: "${id}") {
-        title
-        user {
-          userId
-          username
-        }
-        body {
-          detail
-        }
+export const POST = gql`
+  query Post($id: String!) {
+    post(id: $id) {
+      title
+      user {
+        userId
+        username
+      }
+      body {
+        detail
       }
     }
-  `;
-}
+  }
+`;
 
-export const COMMENT_LISTS = (postId) => {
-  return gql`
-    query {
-      post(id: "${postId}") {
-        comments {
-          body
-          timestamp
-          user
-        }
+export const COMMENT_LISTS = gql`
+  query CommentLists($postId: String!) {
+    post(id: $postId) {
+      comments {
+        body
+        timestamp
+        user
       }
     }
-  `;
-}
+  }
+`;
+
 
 export const USER_SESSION_INFO = gql`
   query {
