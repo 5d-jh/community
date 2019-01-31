@@ -74,7 +74,7 @@ class Resolvers {
       return false;
     }
 
-    await Model.findByIdAndUpdate(postId, {
+    await PostModel.findByIdAndUpdate(postId, {
       $push: {
         comments: {
           body,

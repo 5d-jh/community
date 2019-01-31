@@ -10,12 +10,12 @@ import { Card,
   Form,
   Input
 } from 'reactstrap';
-import { Query } from 'react-apollo';
-import { COMMENT_LISTS, POST } from '../queries';
+import { Query, Mutation } from 'react-apollo';
+import { COMMENT_LISTS, CREATE_COMMENT, POST } from '../queries';
 
 export default class PostDetail extends React.Component {
   state = {
-    commentToSubmit: '',
+    commentToSubmit: 'yo',
     comments: []
   }
 
@@ -54,31 +54,11 @@ export default class PostDetail extends React.Component {
     })
   }
 
-  submitComment = (postId) => {
-    return (event) => {
-      event.preventDefault();
-
-      fetch('http://localhost:3000/api/post/comment/'+postId, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          body: this.state.commentToSubmit
-        })
-      })
-      .then(this.fetchComments);
-    }
-  }
-
-  onCommentFormChange = (event) => {
-    this.setState({
-      commentToSubmit: event.target.value
-    });
-  }
-
   shouldComponentUpdate(nextProp, nextState) {
     const { match } = this.props;
+    const { commentToSubmit } = this.state;
+
+    if (commentToSubmit !== nextState.commentToSubmit) return true;
 
     return nextState.comments.length !== this.state.comments.length ||
     nextProp.match.params.postId !== match.params.postId
@@ -86,7 +66,7 @@ export default class PostDetail extends React.Component {
 
   render() {
     const { match } = this.props;
-    const { comments } = this.state;
+    const { comments, commentToSubmit } = this.state;
 
     return (
       <Query query={POST(match.params.postId)}>
@@ -126,13 +106,30 @@ export default class PostDetail extends React.Component {
                   margin: 0,
                   padding: '10px'
                 }}>
-                  <Form /* onSubmit={this.submitComment(detailViewPostId)}*/ style={{
-                    marginBottom: '10px'
-                  }}>
-                    <Input type="text" onChange={this.onCommentFormChange} placeholder="press enter to submit" style={{
-                      backgroundColor: 'transparent'
-                    }} />
-                  </Form>
+                  <Mutation 
+                    mutation={CREATE_COMMENT}
+                    variables={{
+                      postId: match.params.postId,
+                      body: commentToSubmit
+                    }}
+                  >
+                    {commentMutation => (
+                      <Form onSubmit={commentMutation} style={{
+                        marginBottom: '10px'
+                      }}>
+                        <Input 
+                          type="text" 
+                          onChange={e => {this.setState({
+                            commentToSubmit: e.target.value
+                          })}} 
+                          placeholder="press enter to submit" 
+                          style={{
+                            backgroundColor: 'transparent'
+                          }} 
+                        />
+                      </Form>
+                    )}
+                  </Mutation>
                   <ListGroup>
                     {comments}
                   </ListGroup>

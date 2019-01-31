@@ -40,7 +40,7 @@ export default `
       body: String!
     ): String
 
-    createComment(postId: String!): Boolean!
+    createComment(postId: String!, body: String!): Boolean!
 
     createUser(
       username: String!,
