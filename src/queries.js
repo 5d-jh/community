@@ -19,6 +19,10 @@ export const POST = (id) => {
     query {
       post(id: "${id}") {
         title
+        user {
+          userId
+          username
+        }
         body {
           detail
         }

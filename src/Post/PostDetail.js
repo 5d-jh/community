@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, 
-  CardBody, 
+  CardBody,
+  CardTitle,
   Jumbotron, 
   CardText, 
   ListGroup, 
@@ -105,10 +106,17 @@ export default class PostDetail extends React.Component {
             this.fetchComments();
 
             return (
-              <React.Fragment>
+              <div style={{
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                maxWidth: '700px'
+              }}>
                 <h1>{post.title}</h1>
                 <Card>
                   <CardBody>
+                    <CardTitle>
+                      {post.user.username}
+                    </CardTitle>
                     <CardText>
                       {post.body.detail}
                     </CardText>
@@ -129,7 +137,7 @@ export default class PostDetail extends React.Component {
                     {comments}
                   </ListGroup>
                 </Jumbotron>
-              </React.Fragment>
+              </div>
             )
           }
         }}

@@ -18,8 +18,21 @@ class Resolvers {
   }
 
   post = async ({ id }) => {
-    return await PostModel.findById(id).lean()
-    .catch(err => new Error(err))
+    const post = await PostModel.findById(id).lean()
+    .catch(err => err);
+
+    return await UserModel.findById(post.user)
+    .then(user => ({
+      _id: post._id,
+      title: post.title,
+      body: post.body,
+      user: {
+        userId: user._id,
+        username: user.username
+      },
+      comments: post.comments
+    }))
+    .catch(err => err);
   }
   
   createPost = async ({ title, body }, { session }) => {  
@@ -107,6 +120,12 @@ class Resolvers {
     };
     return await UserModel.findById(session.passport.user, projection)
     .catch(err => console.error(err));
+  }
+
+  user = async ({id}) => {
+    return await UserModel.findById(id)
+    .then(user => user._id)
+    .catch(err => err);
   }
 }
 

@@ -21,7 +21,7 @@ export default class MainList extends React.Component {
             if (error) console.error(error);
 
             if (loading || !data) {
-            return "loading"
+              return "loading"
             }
 
             if (data) {

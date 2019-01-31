@@ -11,6 +11,7 @@ export default `
   }
   
   type UserBody {
+    userId: String!
     username: String!
   }
 
@@ -18,15 +19,19 @@ export default `
     _id: String
     title: String,
     body: PostBody,
-    user: String,
+    user: UserBody,
     tag: String,
     comments: [Comment] 
   }
 
   type Query {
     postsByRecent(range: String!): [Post]!
+
     post(id: String!): Post
+
     userSessionInfo: UserBody
+
+    user(id: String!): UserBody
   }
 
   type Mutation {
