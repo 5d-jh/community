@@ -1,6 +1,6 @@
 import React from 'react';
-import { Query } from 'react-apollo';
-import { POST_LISTS } from '../queries';
+import { graphql, Query } from 'react-apollo';
+import { POST_LISTS, CHECK_NEW_POST } from '../queries';
 import { ArticleCard, PhotoCard, SnippetCard } from './Cards';
 import { Button } from 'reactstrap';
 import './MainList.css';
@@ -8,10 +8,11 @@ import './MainList.css';
 export default class MainList extends React.Component {
   state = {
     posts: [],
+    lastCardId: null,
     page: 0
   }
 
-  fetchPostsByRecent = () => {
+  fetchPostsByRecent = async () => {
     const { posts, page } = this.state;
 
     this.setState({
@@ -31,15 +32,22 @@ export default class MainList extends React.Component {
                 });
               }
 
-              return data.postsByRecent.map((post, i) => (
-                <ArticleCard 
-                  key={i} 
-                  id={'card'+i} 
-                  title={post.title} 
-                  body={post.body.preview} 
-                  postId={post._id} 
-                />
-              ))
+              return data.postsByRecent.map((post, i) => {
+                if (i === 0) {
+                  this.setState({
+                    lastCardId: post._id
+                  })
+                }
+                return (
+                  <ArticleCard 
+                    key={i} 
+                    id={'card'+i} 
+                    title={post.title} 
+                    body={post.body.preview} 
+                    postId={post._id} 
+                  />
+                )
+              });
             }
           }}
         </Query>
@@ -65,12 +73,32 @@ export default class MainList extends React.Component {
   }
 
   render() {
-    const { posts } = this.state;
+    const { posts, lastCardId } = this.state;
 
     return (
       <div className="card-list" /*onScroll={this.isBottom}*/ id="cardList">
-        
-        <div className="card-list__grid">
+        <div className="card-list__grid" id="card-list-grid">
+          {lastCardId ? (
+            <Query 
+              query={CHECK_NEW_POST}
+              variables={{lastPostId: lastCardId}}
+              pollInterval={2500}
+            >
+              {({loading, data, error}) => {
+                if (error) return console.log(error);
+                if (loading) return "loading...";
+
+                if (data) {
+                  return (
+                    <Button onClick={this.fetchPostsByRecent} disabled={!Boolean(data.checkNewPost.postList.length)}>
+                      {data.checkNewPost.postList.length}개의 새 게시글
+                    </Button>
+                  )
+                }
+              }}
+            </Query>
+          ) : 'loading'}
+          
           {posts}
           <Button onClick={this.fetchPostsByRecent}>new</Button>
         </div>

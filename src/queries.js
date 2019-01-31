@@ -61,3 +61,14 @@ export const CREATE_COMMENT = gql`
     createComment(postId: $postId, body: $body)
   }
 `;
+
+export const CHECK_NEW_POST = gql`
+  query CheckNewPost($lastPostId: String!) {
+    checkNewPost(lastPostId: $lastPostId) {
+      isNewPost
+      postList {
+        _id
+      }
+    }
+  }
+`

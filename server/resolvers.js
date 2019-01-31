@@ -127,6 +127,15 @@ class Resolvers {
     .then(user => user._id)
     .catch(err => err);
   }
+
+  checkNewPost = async ({lastPostId}) => {
+    return await PostModel.find({_id: {$gt: lastPostId}})
+    .then(post => ({
+      isNewPost: Boolean(post.length),
+      postList: post
+    }))
+    .catch(err => err);
+  }
 }
 
 export default new Resolvers();

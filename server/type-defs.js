@@ -24,6 +24,11 @@ export default `
     comments: [Comment] 
   }
 
+  type IsNewPost {
+    isNewPost: Boolean!,
+    postList: [Post]
+  }
+
   type Query {
     postsByRecent(range: String!): [Post]!
 
@@ -32,6 +37,8 @@ export default `
     userSessionInfo: UserBody
 
     user(id: String!): UserBody
+
+    checkNewPost(lastPostId: String!): IsNewPost
   }
 
   type Mutation {
