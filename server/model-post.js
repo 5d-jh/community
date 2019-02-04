@@ -2,18 +2,18 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 module.exports = mongoose.model('post', new mongoose.Schema({
-  postId: String,
+  postType: String,
   title: String,
   body: {
     preview: String,
     detail: String
   },
-  timestamp: Date,
+  date: Date,
   user: mongoose.Schema.Types.ObjectId,
-  tag: String,
+  category: String,
   comments: [{
     body: String,
-    timestamp: Date,
+    date: Date,
     user: mongoose.Schema.Types.ObjectId
   }]
 }));

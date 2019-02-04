@@ -3,25 +3,28 @@ import { Card, CardBody, CardTitle, CardText, CardImg }  from 'reactstrap';
 import { Link } from 'react-router-dom';
 // import Store from '../store';
 
-export class ArticleCard extends React.Component {
-    render() {
-        const { title, body, postId, id } = this.props;
-
-        return (
-            <Card id={id} style={{
-                marginBottom: '5px',
-                cursor: 'pointer'
-            }}>
-                <CardBody>
-                    <CardTitle><Link to={`/view/${postId}`}><h3>{title}</h3></Link></CardTitle>
-                    <CardText>{body}...</CardText>
-                </CardBody>
-            </Card>
-        )
-    }
+const ArticleCard = ({ title, body, postId, id }) => {
+  return (
+    <Card id={id} style={{
+      marginBottom: '5px',
+      cursor: 'pointer',
+      border: 'none',
+      backgroundColor: '#f7f7f7'
+    }}>
+      <Link to={`/view/${postId}`} style={{
+        color: 'black',
+        textDecoration: 'none'
+      }}>
+        <CardBody>
+          <CardTitle><h3>{title}</h3></CardTitle>
+          <CardText>{body}...</CardText>
+        </CardBody>
+      </Link>
+    </Card>
+  )
 }
 
-export const PhotoCard = () => {
+const PhotoCard = () => {
     return (
         <Card>
             <CardImg />
@@ -32,7 +35,7 @@ export const PhotoCard = () => {
     )
 }
 
-export const SnippetCard = ({ body, onClick }) => {
+const SnippetCard = ({ body, onClick }) => {
     return (
         <Card onClick={onClick}>
             <CardBody>
@@ -40,4 +43,52 @@ export const SnippetCard = ({ body, onClick }) => {
             </CardBody>
         </Card>
     )
+}
+
+export default ({ cardType, title, body, postId, id}) => { 
+  if (!cardType) return null;
+
+  const cardStyle = {
+    marginBottom: '5px',
+    cursor: 'pointer',
+    border: 'none',
+    backgroundColor: '#f7f7f7'
+  };
+
+  if (cardType === 'article') {
+    return (
+      <Card id={id} style={cardStyle}>
+        <Link to={`/view/${postId}`} style={{
+          color: 'black',
+          textDecoration: 'none'
+        }}>
+          <CardBody>
+            <CardTitle><h3>{title}</h3></CardTitle>
+            <CardText>{body}...</CardText>
+          </CardBody>
+        </Link>
+      </Card>
+    )
+  }
+
+  if (cardType === 'snippet') {
+    return (
+      <Card id={id} style={cardStyle}>
+        <Link to={`/view/${postId}`}>
+          <CardBody>
+            <CardText><h4>{body}</h4></CardText>
+          </CardBody>
+        </Link>
+      </Card>
+    )
+  }
+
+  if (cardType === 'photo') {
+    <Card>
+      <CardImg />
+      <CardBody>
+        <CardTitle></CardTitle>
+      </CardBody>
+    </Card>
+  }
 }

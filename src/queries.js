@@ -1,18 +1,17 @@
 import gql from 'graphql-tag';
 
-export const POST_LISTS = (range) => {
-  return gql`
-    query {
-      postsByRecent(range: "${range}") {
-        _id
-        title
-        body {
-          preview
-        }
+export const POST_LISTS = gql`
+  query PostsByRecent($range: String!) {
+    postsByRecent(range: $range) {
+      _id
+      title
+      body {
+        preview
       }
+      postType
     }
-  `;
-}
+  }
+`;
 
 export const POST = gql`
   query Post($id: String!) {
@@ -34,7 +33,7 @@ export const COMMENT_LISTS = gql`
     post(id: $postId) {
       comments {
         body
-        timestamp
+        date
         user
       }
     }
@@ -50,9 +49,15 @@ export const USER_SESSION_INFO = gql`
   }
 `;
 
-export const CREATE_POST = gql`
-  mutation CreatePost($title: String!, $body: String!) {
-    createPost(title: $title, body: $body)
+export const CREATE_ARTICLE = gql`
+  mutation CreatePost($title: String!, $body: String!, $postType: String!) {
+    createPost(title: $title, body: $body, postType: $postType)
+  }
+`;
+
+export const CREATE_SNIPPET = gql`
+  mutation CreateSnippet($body: String!, $postType: String!) {
+    createPost(body: $body, postType: $postType)
   }
 `;
 

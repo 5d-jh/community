@@ -8,7 +8,7 @@ import {
   NavLink 
 } from 'reactstrap';
 import { Mutation } from 'react-apollo';
-import { CREATE_POST } from '../queries';
+import { CREATE_ARTICLE, CREATE_SNIPPET } from '../queries';
 
 export default class PostSubmitForm extends React.Component {
   state = {
@@ -23,8 +23,12 @@ export default class PostSubmitForm extends React.Component {
     return {
       article: (
         <Mutation 
-          mutation={CREATE_POST}
-          variables={{ title: inputTitle, body: inputBody }}
+          mutation={CREATE_ARTICLE}
+          variables={{
+            title: inputTitle, 
+            body: inputBody,
+            postType: 'article'
+          }}
           onCompleted={({createPost}) => {
             window.location.replace(`/#/view/${createPost}`);
           }}
@@ -46,14 +50,27 @@ export default class PostSubmitForm extends React.Component {
       ),
 
       snippet: (
-        <Form>
-          <FormGroup>
-            <Input type="textarea" id="text" />
-          </FormGroup>
-          <FormGroup>
-            <Input type="submit" value="글쓰기" />
-          </FormGroup>
-        </Form>
+        <Mutation
+          mutation={CREATE_SNIPPET}
+          variables={{
+            body: inputBody,
+            postType: 'snippet'
+          }}
+          onCompleted={({createPost}) => {
+            window.location.replace(`/#/view/${createPost}`);
+          }}
+        >
+          {postMutation => (
+            <Form onSubmit={postMutation}>
+              <FormGroup>
+                <Input type="textarea" id="text" onChange={e => {this.setState({inputBody: e.target.value})}} />
+              </FormGroup>
+              <FormGroup>
+                <Input type="submit" value="글쓰기" />
+              </FormGroup>
+            </Form>
+          )}
+        </Mutation>          
       ),
 
       picture: (

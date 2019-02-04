@@ -13,7 +13,7 @@ class Resolvers {
     range[1] = parseInt(range[1])
 
     return await PostModel.find({})
-      .sort('-timestamp').skip(range[0]).limit(range[1]).lean()
+      .sort('-date').skip(range[0]).limit(range[1]).lean()
       .catch(err => new Error(err));
   }
 
@@ -35,7 +35,7 @@ class Resolvers {
     .catch(err => err);
   }
   
-  createPost = async ({ title, body }, { session }) => {  
+  createPost = async ({ title, body, postType }, { session }) => {
     if (!session.passport) {
       return false;
     }
@@ -56,12 +56,13 @@ class Resolvers {
     }
 
     const postToSubmit = {
+      postType,
       title,
       body: {
         preview: omittedString,
         detail: body
       },
-      timestamp: new Date(),
+      date: new Date(),
       user: session.passport.user
     };
     return await PostModel.create(postToSubmit)
@@ -78,7 +79,7 @@ class Resolvers {
       $push: {
         comments: {
           body,
-          timestamp: new Date(),
+          date: new Date(),
           user: session.passport.user
         }
       }

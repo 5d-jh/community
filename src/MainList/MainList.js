@@ -1,100 +1,62 @@
 import React from 'react';
-import { graphql, Query } from 'react-apollo';
+import { Query, withApollo } from 'react-apollo';
 import { POST_LISTS, CHECK_NEW_POST } from '../queries';
-import { ArticleCard, PhotoCard, SnippetCard } from './Cards';
+import Cards from './Cards';
 import { Button } from 'reactstrap';
 import './MainList.css';
 
-export default class MainList extends React.Component {
+class MainList extends React.Component {
   state = {
-    posts: [],
-    lastCardId: null,
-    page: 0
+    postCards: [],
+    updatedPostCards: null,
+    newestPostId: null,
+    shouldMountPostLiveUpdater: true,
+    page: 0,
+    refetchPostCards: null
   }
 
-  updateNewPosts = (howmany) => {
-    const { posts } = this.state;
-
-    return () => {
-      this.setState({
-        posts: [(
-          <Query query={POST_LISTS(`0-${howmany}`)}>
-            {({loading, data, error}) => {
-              if (error) console.error(error);
+  // updateNewPosts = (howmany) => {
+  //   return () => {
+  //     this.setState({
+  //       updatedPostCards: (
+  //         <Query
+  //           query={POST_LISTS}
+  //           variables={{
+  //             range: 0 + '-' + howmany
+  //           }}
+  //         >
+  //           {({loading, data, error}) => {
+  //             if (error) console.error(error);
   
-              if (loading || !data) {
-                return "loading"
-              }
+  //             if (loading || !data) {
+  //               return "loading"
+  //             }
   
-              if (data) {
-                return data.postsByRecent.map((post, i) => {
-                  if (i === 0) {
-                    this.setState({
-                      lastCardId: post._id
-                    })
-                  }
-                  return (
-                    <ArticleCard 
-                      key={i} 
-                      id={'card'+i} 
-                      title={post.title} 
-                      body={post.body.preview} 
-                      postId={post._id} 
-                    />
-                  )
-                });
-              }
-            }}
-          </Query>
-        ), ...posts]
-      });
-    }
-  }
-
-  fetchPostsByRecent = (setLastCardId) => {
-    const { posts, page } = this.state;
-
-    return () => {
-      this.setState({
-        posts: [...posts, (
-          <Query query={POST_LISTS(`${page*10}-${(page+1)*10}`)}>
-            {({loading, data, error}) => {
-              if (error) console.error(error);
-  
-              if (loading || !data) {
-                return "loading"
-              }
-  
-              if (data) {
-                if (data.postsByRecent.length !== 0) {
-                  this.setState({
-                    page: page + 1
-                  });
-                }
-  
-                return data.postsByRecent.map((post, i) => {
-                  if (i === 0 && setLastCardId) {
-                    this.setState({
-                      lastCardId: post._id
-                    });
-                  }
-                  return (
-                    <ArticleCard 
-                      key={i} 
-                      id={'card'+i} 
-                      title={post.title} 
-                      body={post.body.preview} 
-                      postId={post._id} 
-                    />
-                  )
-                });
-              }
-            }}
-          </Query>
-        )]
-      });
-    }
-  }
+  //             if (data) {
+  //               return data.postsByRecent.map((post, i) => {
+  //                 if (i === 0) {
+  //                   this.setState({
+  //                     newestPostId: post._id
+  //                   })
+  //                 }
+  //                 return (
+  //                   <Cards 
+  //                     cardType={false}
+  //                     key={i} 
+  //                     id={'card'+i} 
+  //                     title={post.title} 
+  //                     body={post.body.preview} 
+  //                     postId={post._id} 
+  //                   />
+  //                 )
+  //               });
+  //             }
+  //           }}
+  //         </Query>
+  //       )
+  //     });
+  //   }
+  // }
 
   isBottom = () => {
     const cardListElement = Math.floor(document.getElementById('cardList')
@@ -109,42 +71,109 @@ export default class MainList extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const setLastCardId = true;
-    this.fetchPostsByRecent(setLastCardId)(); 
-  }
-
   render() {
-    const { posts, lastCardId } = this.state;
+    const { shouldMountPostLiveUpdater, newestPostId, updatedPostCards, postCards, page, refetchPostCards } = this.state;
 
     return (
       <div className="card-list" /*onScroll={this.isBottom}*/ id="cardList">
         <div className="card-list__grid" id="card-list-grid">
-          {lastCardId ? (
-            <Query 
-              query={CHECK_NEW_POST}
-              variables={{lastPostId: lastCardId}}
-              pollInterval={2500}
-            >
-              {({loading, data, error}) => {
-                if (error) return console.log(error);
-                if (loading) return "loading...";
+          {updatedPostCards}
 
-                if (data) {
+          <Query
+            query={CHECK_NEW_POST}
+            variables={{lastPostId: newestPostId}}
+            pollInterval={2500}
+          >
+            {({loading, data, error}) => {
+              if (error) {
+                console.log(error);
+                return null;
+              } 
+              if (loading) return "loading...";
+
+              if (data) {
+                if (data.checkNewPost.postList.length !== 0) {
                   return (
-                    <Button onClick={this.updateNewPosts(data.checkNewPost.postList.length)} disabled={!Boolean(data.checkNewPost.postList.length)}>
+                    <Button
+                      onClick={() => {
+                        this.setState({
+                          shouldMountPostLiveUpdater: true
+                        }, () => {
+                          refetchPostCards({
+                            variables: 0 + '-' + data.checkNewPost.postList.length
+                          })
+                        });
+                          
+                      }}
+                      disabled={!Boolean(data.checkNewPost.postList.length)}
+                    >
                       {data.checkNewPost.postList.length}개의 새 게시글
                     </Button>
                   )
                 }
-              }}
-            </Query>
-          ) : 'loading...'}
-          
-          {posts}
-          <Button onClick={this.fetchPostsByRecent(false)}>new</Button>
+                return null;
+              }
+
+            }}
+          </Query>
+
+          {postCards}
+
+          <Query
+            query={POST_LISTS}
+            variables={{
+              range: page*10 + '-' + (page+1)*10
+            }}
+          >
+            {({ loading, data , error, refetch }) => {
+              if (error) console.error(error);
+  
+              if (loading || !data) {
+                return "loading"
+              }
+  
+              if (data) {
+                const mappedPostCards = data.postsByRecent.map((post, i) => {
+                  if ((i === 0 && newestPostId !== post._id)&& shouldMountPostLiveUpdater) {
+                    this.setState({
+                      refetchPostCards: refetch,
+                      newestPostId: post._id
+                    });
+                  }
+
+                  return (
+                    <Cards
+                      cardType={post.postType}
+                      key={i}
+                      id={'card'+i}
+                      title={post.title}
+                      body={post.body.preview}
+                      postId={post._id}
+                    />
+                  )
+                });
+
+                return (
+                  <React.Fragment>
+                    {mappedPostCards}
+                    <Button onClick={() => {
+                      this.setState({
+                        page: mappedPostCards.length !== 0 ? page + 1 : page,
+                        postCards: [postCards, ...mappedPostCards],
+                        shouldMountPostLiveUpdater: false,
+                      }, refetch);
+                    }}>
+                      더 불러오기
+                    </Button>
+                  </React.Fragment>
+                )
+              }
+            }}
+          </Query>
         </div>
       </div>
     )
   }
 }
+
+export default withApollo(MainList);

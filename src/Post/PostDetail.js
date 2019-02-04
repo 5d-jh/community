@@ -67,7 +67,10 @@ export default class PostDetail extends React.Component {
                     variables={{postId: match.params.postId}}
                   >
                     {({loading, data, error, refetch}) => {
-                      if (error) return console.log(error);
+                      if (error) {
+                        console.log(error);
+                        return null;
+                      }
                       if (loading) return "loading";
 
                       if (data) {

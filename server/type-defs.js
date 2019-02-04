@@ -1,7 +1,7 @@
 export default `
   type Comment {
     body: String!,
-    timestamp: String!,
+    date: String!,
     user: String!
   }
 
@@ -16,10 +16,11 @@ export default `
   }
 
   type Post {
-    _id: String
+    _id: String!,
+    postType: String!,
     title: String,
-    body: PostBody,
-    user: UserBody,
+    body: PostBody!,
+    user: UserBody!,
     tag: String,
     comments: [Comment] 
   }
@@ -43,8 +44,9 @@ export default `
 
   type Mutation {
     createPost(
-      title: String!, 
-      body: String!
+      title: String, 
+      body: String!,
+      postType: String!
     ): String
 
     createComment(postId: String!, body: String!): Boolean!
