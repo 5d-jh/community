@@ -2,18 +2,9 @@ import PostModel from './model-post';
 import UserModel from './model-user';
 
 class Resolvers {
-  postsByRecent = async ({ range }) => {
-    range = range.split('-');
-
-    if (range.length != 2) {
-      new Error('range error');
-    }
-
-    range[0] = parseInt(range[0]);
-    range[1] = parseInt(range[1])
-
+  postsByRecent = async ({ skip, limit }) => {
     return await PostModel.find({})
-      .sort('-date').skip(range[0]).limit(range[1]).lean()
+      .sort('-date').skip(skip).limit(limit).lean()
       .catch(err => new Error(err));
   }
 

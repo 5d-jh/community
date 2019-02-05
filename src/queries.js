@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const POST_LISTS = gql`
-  query PostsByRecent($range: String!) {
-    postsByRecent(range: $range) {
+  query PostsByRecent($skip: Int!, $limit: Int!) {
+    postsByRecent(skip: $skip, limit: $limit) {
       _id
       title
       body {

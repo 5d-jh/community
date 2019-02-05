@@ -89,7 +89,7 @@ export default class PostDetail extends React.Component {
                                   marginBottom: '10px'
                                 }}>
                                   <Input 
-                                    type="text" 
+                                    type="text"
                                     onChange={e => {this.setState({
                                       commentToSubmit: e.target.value
                                     })}} 
