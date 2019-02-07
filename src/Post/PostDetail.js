@@ -11,7 +11,40 @@ import { Card,
   Input
 } from 'reactstrap';
 import { Query, Mutation } from 'react-apollo';
-import { COMMENT_LISTS, CREATE_COMMENT, POST } from '../queries';
+import gql from 'graphql-tag';
+
+const COMMENT_LISTS = gql`
+  query CommentLists($postId: String!) {
+    post(id: $postId) {
+      comments {
+        body
+        date
+        user
+      }
+    }
+  }
+`;
+
+const CREATE_COMMENT = gql`
+  mutation CreateComment($postId: String!, $body: String!) {
+    createComment(postId: $postId, body: $body)
+  }
+`;
+
+const POST = gql`
+  query Post($id: String!) {
+    post(id: $id) {
+      title
+      user {
+        userId
+        username
+      }
+      body {
+        detail
+      }
+    }
+  }
+`;
 
 export default class PostDetail extends React.Component {
   state = {

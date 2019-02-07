@@ -1,9 +1,33 @@
 import React from 'react';
 import { Query, withApollo } from 'react-apollo';
-import { POST_LISTS, CHECK_NEW_POST } from '../queries';
+import gql from 'graphql-tag';
 import Cards from './Cards';
 import { Button } from 'reactstrap';
 import './MainList.css';
+
+const POST_LISTS = gql`
+  query PostsByRecent($skip: Int!, $limit: Int!) {
+    postsByRecent(skip: $skip, limit: $limit) {
+      _id
+      title
+      body {
+        preview
+      }
+      postType
+    }
+  }
+`;
+
+const CHECK_NEW_POST = gql`
+  query CheckNewPost($lastPostId: String!) {
+    checkNewPost(lastPostId: $lastPostId) {
+      isNewPost
+      postList {
+        _id
+      }
+    }
+  }
+`;
 
 class MainList extends React.Component {
   state = {

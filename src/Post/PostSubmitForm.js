@@ -8,7 +8,23 @@ import {
   NavLink 
 } from 'reactstrap';
 import { Mutation } from 'react-apollo';
-import { CREATE_ARTICLE, CREATE_SNIPPET } from '../queries';
+import gql from 'graphql-tag';
+
+const CREATE_POST = gql`
+  mutation CreatePost(
+    $title: String, 
+    $body: String!, 
+    $postType: String!, 
+    $category: String
+  ) {
+    createPost(
+      title: $title, 
+      body: $body, 
+      postType: $postType, 
+      category: $category
+    )
+  }
+`;
 
 export default class PostSubmitForm extends React.Component {
   state = {
@@ -48,11 +64,7 @@ export default class PostSubmitForm extends React.Component {
           </NavItem>
         </Nav>
         <Mutation
-          mutation={{
-            article: CREATE_ARTICLE,
-            snippet: CREATE_SNIPPET,
-            photo: null
-          }[postTypeSelected]}
+          mutation={CREATE_POST}
           variables={{
             title: inputTitle, 
             body: inputBody,

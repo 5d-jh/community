@@ -13,8 +13,16 @@ import {
 } from 'reactstrap';
 import { Query } from 'react-apollo';
 import { Link } from 'react-router-dom';
-import { USER_SESSION_INFO } from '../queries';
+import gql from 'graphql-tag';
 import './NavigationBar.css';
+
+const USER_SESSION_INFO = gql`
+  query {
+    userSessionInfo {
+      username
+    }
+  }
+`;
 
 export default class NavigationBar extends React.Component {
   state = {
