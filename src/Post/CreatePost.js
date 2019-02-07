@@ -1,6 +1,5 @@
 import React from 'React';
 import { Card, CardBody, CardTitle } from 'reactstrap';
-import { Link } from 'react-router-dom';
 import PostSubmitForm from './PostSubmitForm';
 
 export default class CreatePost extends React.Component {

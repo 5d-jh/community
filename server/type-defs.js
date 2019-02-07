@@ -40,13 +40,16 @@ export default `
     user(id: String!): UserBody
 
     checkNewPost(lastPostId: String!): IsNewPost
+
+    categories: [String]!
   }
 
   type Mutation {
     createPost(
       title: String, 
       body: String!,
-      postType: String!
+      postType: String!,
+      category: String
     ): String
 
     createComment(postId: String!, body: String!): Boolean!

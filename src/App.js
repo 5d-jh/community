@@ -7,6 +7,7 @@ import MainList from './MainList/MainList';
 import PostDetail from './Post/PostDetail';
 import NavigationBar from './Navbar/NavigationBar';
 import CreatePost from './Post/CreatePost';
+import Categories from './Categories/Categories'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -20,7 +21,8 @@ class App extends React.Component {
               <NavigationBar />
             </div>
             <div className="main-grid__flex">
-              <Route path={"/"} component={MainList} />
+              <Categories />
+              <MainList />
               <div className="main-grid__post-detail">
                 <Route path={"/create_post"} component={CreatePost} />
                 <Route path={"/view/:postId"} component={PostDetail} />

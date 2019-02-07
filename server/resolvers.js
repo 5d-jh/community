@@ -26,7 +26,7 @@ class Resolvers {
     .catch(err => err);
   }
   
-  createPost = async ({ title, body, postType }, { session }) => {
+  createPost = async ({ title, body, postType, category }, { session }) => {
     if (!session.passport) {
       return false;
     }
@@ -49,6 +49,7 @@ class Resolvers {
     const postToSubmit = {
       postType,
       title,
+      category,
       body: {
         preview: omittedString,
         detail: body
@@ -126,6 +127,11 @@ class Resolvers {
       isNewPost: Boolean(post.length),
       postList: post
     }))
+    .catch(err => err);
+  }
+
+  categories = async () => {
+    return await PostModel.find().distinct('category')
     .catch(err => err);
   }
 }

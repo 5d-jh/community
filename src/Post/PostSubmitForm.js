@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { 
   Form, 
   FormGroup,
@@ -14,80 +14,12 @@ export default class PostSubmitForm extends React.Component {
   state = {
     postTypeSelected: 'article',
     inputTitle: null,
-    inputBody: null
-  }
-
-  submitForms = (formType) => {
-    const { inputTitle, inputBody } = this.state;
-
-    return {
-      article: (
-        <Mutation 
-          mutation={CREATE_ARTICLE}
-          variables={{
-            title: inputTitle, 
-            body: inputBody,
-            postType: 'article'
-          }}
-          onCompleted={({createPost}) => {
-            window.location.replace(`/#/view/${createPost}`);
-          }}
-        >
-          {postMutation => (
-            <Form onSubmit={postMutation}>
-              <FormGroup>
-                <Input type="text" placeholder="제목" onChange={e => {this.setState({inputTitle: e.target.value})}} />
-              </FormGroup>
-              <FormGroup>
-                <Input type="textarea" onChange={e => {this.setState({inputBody: e.target.value})}} />
-              </FormGroup>
-              <FormGroup>
-                <Input type="submit" value="글쓰기" />
-              </FormGroup>
-            </Form>
-          )}
-        </Mutation>
-      ),
-
-      snippet: (
-        <Mutation
-          mutation={CREATE_SNIPPET}
-          variables={{
-            body: inputBody,
-            postType: 'snippet'
-          }}
-          onCompleted={({createPost}) => {
-            window.location.replace(`/#/view/${createPost}`);
-          }}
-        >
-          {postMutation => (
-            <Form onSubmit={postMutation}>
-              <FormGroup>
-                <Input type="textarea" id="text" onChange={e => {this.setState({inputBody: e.target.value})}} />
-              </FormGroup>
-              <FormGroup>
-                <Input type="submit" value="글쓰기" />
-              </FormGroup>
-            </Form>
-          )}
-        </Mutation>          
-      ),
-
-      picture: (
-        <Form>
-          <FormGroup>
-            <Input type="text" placeholder="제목" id="text" />
-          </FormGroup>
-          <FormGroup>
-            <Input type="file" id="text" />
-          </FormGroup>
-        </Form>
-      )
-    }[formType];
+    inputBody: null,
+    inputCategory: null
   }
   
   render() {
-    const { postTypeSelected } = this.state;
+    const { postTypeSelected, inputBody, inputTitle, inputCategory } = this.state;
 
     return (
       <div>
@@ -108,15 +40,69 @@ export default class PostSubmitForm extends React.Component {
           </NavItem>
           <NavItem>
             <NavLink
+              disabled
               href="#"
               onClick={() => this.setState({postTypeSelected: 'picture'})}>
               사진
             </NavLink>
           </NavItem>
         </Nav>
-        <div>
-          {this.submitForms(postTypeSelected)}
-        </div>
+        <Mutation
+          mutation={{
+            article: CREATE_ARTICLE,
+            snippet: CREATE_SNIPPET,
+            photo: null
+          }[postTypeSelected]}
+          variables={{
+            title: inputTitle, 
+            body: inputBody,
+            postType: postTypeSelected,
+            category: inputCategory
+          }}
+          onCompleted={({createPost}) => {
+            window.location.replace(`/#/view/${createPost}`);
+          }}
+        >
+          {postMutation => (
+            <Form onSubmit={postMutation}>
+              <FormGroup>
+                <Input type="text" placeholder="카테고리" onChange={e => {this.setState({inputCategory: e.target.value})}} />
+              </FormGroup>
+              {{
+                article: (
+                  <Fragment>
+                    <FormGroup>
+                      <Input type="text" placeholder="제목" onChange={e => {this.setState({inputTitle: e.target.value})}} />
+                    </FormGroup>
+                    <FormGroup>
+                      <Input type="textarea" onChange={e => {this.setState({inputBody: e.target.value})}} />
+                    </FormGroup>
+                  </Fragment>
+                ),
+                snippet: (
+                  <Fragment>
+                    <FormGroup>
+                      <Input type="textarea" id="text" onChange={e => {this.setState({inputBody: e.target.value})}} />
+                    </FormGroup>
+                  </Fragment>
+                ),
+                picture: (
+                  <Fragment>
+                    <FormGroup>
+                      <Input type="text" placeholder="제목" id="text" />
+                    </FormGroup>
+                    <FormGroup>
+                      <Input type="file" id="text" />
+                    </FormGroup>
+                  </Fragment>
+                )
+              }[postTypeSelected]}
+              <FormGroup>
+                <Input type="submit" value="글쓰기" />
+              </FormGroup>
+            </Form>
+          )}
+        </Mutation>
       </div>
     )
   }

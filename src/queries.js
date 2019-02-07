@@ -50,14 +50,18 @@ export const USER_SESSION_INFO = gql`
 `;
 
 export const CREATE_ARTICLE = gql`
-  mutation CreatePost($title: String!, $body: String!, $postType: String!) {
-    createPost(title: $title, body: $body, postType: $postType)
+  mutation CreatePost(
+    $title: String!, 
+    $body: String!, 
+    $postType: String!, 
+    $category: String) {
+    createPost(title: $title, body: $body, postType: $postType, category: $category)
   }
 `;
 
 export const CREATE_SNIPPET = gql`
-  mutation CreateSnippet($body: String!, $postType: String!) {
-    createPost(body: $body, postType: $postType)
+  mutation CreateSnippet($body: String!, $postType: String!, $category: String) {
+    createPost(body: $body, postType: $postType, category: $category)
   }
 `;
 

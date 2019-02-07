@@ -1,0 +1,10 @@
+.categories {
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.category-button + .category-button {
+  margin: 10px;
+}
