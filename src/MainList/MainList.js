@@ -1,5 +1,5 @@
 import React from 'react';
-import { Query, withApollo } from 'react-apollo';
+import { Query, ApolloConsumer } from 'react-apollo';
 import gql from 'graphql-tag';
 import Cards from './Cards';
 import { Button } from 'reactstrap';
@@ -156,4 +156,8 @@ class MainList extends React.Component {
   }
 }
 
-export default withApollo(MainList);
+export default () => (
+  <ApolloConsumer>
+    {client => <MainList client={client} />}
+  </ApolloConsumer>
+);
