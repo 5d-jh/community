@@ -1,5 +1,5 @@
 import React from 'React';
-import { Card, CardBody, CardTitle } from 'reactstrap';
+import { Card } from 'semantic-ui-react';
 import PostSubmitForm from './PostSubmitForm';
 
 export default class CreatePost extends React.Component {
@@ -11,10 +11,10 @@ export default class CreatePost extends React.Component {
           marginRight: 'auto',
           maxWidth: '700px'
         }}>
-          <CardBody>
-            <CardTitle><h3>글쓰기</h3></CardTitle>
+          <Card.Content>
+            <Card.Header><h3>글쓰기</h3></Card.Header>
             <PostSubmitForm />
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
     )

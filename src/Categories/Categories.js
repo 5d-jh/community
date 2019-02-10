@@ -1,6 +1,6 @@
 import React from 'react';
 import './Categories.css';
-import { Button } from 'reactstrap';
+import { Button } from 'semantic-ui-react';
 
 export default class Categories extends React.Component {
   render() {
