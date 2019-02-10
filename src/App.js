@@ -9,7 +9,7 @@ import NavigationBar from './Navbar/NavigationBar';
 import CreatePost from './Post/CreatePost';
 import Categories from './Categories/Categories'
 import gql from 'graphql-tag';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 
 const USER_SESSION_INFO = gql`

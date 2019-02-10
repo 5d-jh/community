@@ -1,12 +1,5 @@
 import React, { Fragment } from 'react';
-import { 
-  Form, 
-  FormGroup,
-  Input, 
-  Nav, 
-  NavItem, 
-  NavLink 
-} from 'reactstrap';
+import { Form, Tab } from 'semantic-ui-react';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
@@ -37,32 +30,14 @@ export default class PostSubmitForm extends React.Component {
   render() {
     const { postTypeSelected, inputBody, inputTitle, inputCategory } = this.state;
 
+    const tabIndexName = [
+      'article',
+      'snippet',
+      'picture'
+    ]
+
     return (
       <div>
-        <Nav className="nav-fill">
-          <NavItem>
-            <NavLink
-              href="#"
-              onClick={() => this.setState({postTypeSelected: 'article'})}>
-              아티클
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              href="#"
-              onClick={() => this.setState({postTypeSelected: 'snippet'})}>
-              스니펫
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              disabled
-              href="#"
-              onClick={() => this.setState({postTypeSelected: 'picture'})}>
-              사진
-            </NavLink>
-          </NavItem>
-        </Nav>
         <Mutation
           mutation={CREATE_POST}
           variables={{
@@ -77,41 +52,50 @@ export default class PostSubmitForm extends React.Component {
         >
           {postMutation => (
             <Form onSubmit={postMutation}>
-              <FormGroup>
-                <Input type="text" placeholder="카테고리" onChange={e => {this.setState({inputCategory: e.target.value})}} />
-              </FormGroup>
-              {{
-                article: (
-                  <Fragment>
-                    <FormGroup>
-                      <Input type="text" placeholder="제목" onChange={e => {this.setState({inputTitle: e.target.value})}} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Input type="textarea" onChange={e => {this.setState({inputBody: e.target.value})}} />
-                    </FormGroup>
-                  </Fragment>
-                ),
-                snippet: (
-                  <Fragment>
-                    <FormGroup>
-                      <Input type="textarea" id="text" onChange={e => {this.setState({inputBody: e.target.value})}} />
-                    </FormGroup>
-                  </Fragment>
-                ),
-                picture: (
-                  <Fragment>
-                    <FormGroup>
-                      <Input type="text" placeholder="제목" id="text" />
-                    </FormGroup>
-                    <FormGroup>
-                      <Input type="file" id="text" />
-                    </FormGroup>
-                  </Fragment>
-                )
-              }[postTypeSelected]}
-              <FormGroup>
-                <Input type="submit" value="글쓰기" />
-              </FormGroup>
+              <Form.Field>
+                <input type="text" placeholder="카테고리" onChange={e => {this.setState({inputCategory: e.target.value})}} />
+              </Form.Field>
+              <Tab 
+                onTabChange={(_, { activeIndex }) => this.setState({ postTypeSelected: tabIndexName[activeIndex] })}
+                panes={[
+                {
+                  menuItem: '아티클',
+                  render: () => (
+                    <Fragment>
+                      <Form.Field>
+                        <input type="text" placeholder="제목" onChange={e => {this.setState({inputTitle: e.target.value})}} />
+                      </Form.Field>
+                      <Form.Field>
+                        <input type="textarea" onChange={e => {this.setState({inputBody: e.target.value})}} />
+                      </Form.Field>
+                    </Fragment>
+                  )
+                }, {
+                  menuItem: '스니펫',
+                  render: () => (
+                    <Fragment>
+                      <Form.Field>
+                        <input type="textarea" id="text" onChange={e => {this.setState({inputBody: e.target.value})}} />
+                      </Form.Field>
+                    </Fragment>
+                  )
+                }, {
+                  menuItem: '사진',
+                  render: () => (
+                    <Fragment>
+                      <Form.Field>
+                        <input type="text" placeholder="제목" id="text" />
+                      </Form.Field>
+                      <Form.Field>
+                        <input type="file" id="text" />
+                      </Form.Field>
+                    </Fragment>
+                  )
+                }
+              ]} />
+              <Form.Field>
+                <input type="submit" value="글쓰기" />
+              </Form.Field>
             </Form>
           )}
         </Mutation>

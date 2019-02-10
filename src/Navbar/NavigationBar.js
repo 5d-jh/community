@@ -1,46 +1,30 @@
 import React, { Fragment } from 'react';
-import {
-  Button,
-  Nav,
-  Navbar,
-  NavbarBrand,
-  NavItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
-} from 'reactstrap';
+import { Button, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import './NavigationBar.css';
 
 const NavigationBar = ({ userSessionInfo }) => {
   return (
-    <Navbar color="light">
-      <NavbarBrand>
+    <Menu secondary>
+      <Menu.Item header>
         <Link to="/">Community</Link>
-      </NavbarBrand>
-      <Nav className="ml-auto">
+      </Menu.Item>
+      <Menu.Menu position="right">
         {userSessionInfo ? (
           <Fragment>
-            <NavItem className="float-left">
+            <Menu.Item className="float-left">
               <Link to="/create_post" className="nav-link">글쓰기</Link>
-            </NavItem>
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                {userSessionInfo.username}
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem color="link" href="/auth/logout">로그아웃</DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+            </Menu.Item>
+            <Dropdown item text={userSessionInfo.username}>
+              <Dropdown.Menu right>
+                <Dropdown.Item color="link" href="/auth/logout">로그아웃</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Fragment>
         ) : (
           <Fragment>
-            <UncontrolledDropdown navb>
-              <DropdownToggle nav caret>
-                로그인
-              </DropdownToggle>
-              <DropdownMenu right>
+            <Dropdown item text="로그인">
+              <Dropdown.Menu right icon="">
                 <div>
                   <Button outline className="google-button" color="link" href="/auth/google">
                     <span className="google-button__icon">
@@ -56,12 +40,12 @@ const NavigationBar = ({ userSessionInfo }) => {
                     </span>
                   </Button>
                 </div>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+              </Dropdown.Menu>
+            </Dropdown>
           </Fragment>
         )}
-      </Nav>
-    </Navbar>
+      </Menu.Menu>
+    </Menu>
   )
 }
 

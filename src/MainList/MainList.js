@@ -2,7 +2,7 @@ import React from 'react';
 import { Query, ApolloConsumer } from 'react-apollo';
 import gql from 'graphql-tag';
 import Cards from './Cards';
-import { Button } from 'reactstrap';
+import { Button } from 'semantic-ui-react';
 import './MainList.css';
 
 const POST_LISTS = gql`
@@ -74,8 +74,6 @@ class MainList extends React.Component {
   fetchOlderPosts = () => {
     const { client } = this.props;
     const { posts, page } = this.state;
-
-    console.log(page * 10, (page + 1) * 10)
 
     client.query({
       query: POST_LISTS,

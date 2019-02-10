@@ -1,15 +1,5 @@
 import React from 'react';
-import { Card, 
-  CardBody,
-  CardTitle,
-  Jumbotron, 
-  CardText, 
-  ListGroup, 
-  ListGroupItem,
-  ListGroupItemHeading,
-  Form,
-  Input
-} from 'reactstrap';
+import { Container, Divider, Form, Header, List } from 'semantic-ui-react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
@@ -79,22 +69,15 @@ export default class PostDetail extends React.Component {
                 marginRight: 'auto',
                 maxWidth: '700px'
               }}>
-                <h1>{post.title}</h1>
-                <Card>
-                  <CardBody>
-                    <CardTitle>
-                      {post.user.username}
-                    </CardTitle>
-                    <CardText>
-                      {post.body.detail}
-                    </CardText>
-                  </CardBody>
-                </Card>
-
-                <Jumbotron style={{
-                  margin: 0,
-                  padding: '10px'
-                }}>
+                <Container textAlign="center">
+                  {post.user.username}
+                  <Header as="h2">
+                    <h1>{post.title}</h1>
+                  </Header>
+                </Container>
+                <Container>
+                  {post.body.detail}
+                <Divider />
                   <Query
                     query={COMMENT_LISTS}
                     variables={{postId: match.params.postId}}
@@ -121,7 +104,7 @@ export default class PostDetail extends React.Component {
                                 <Form onSubmit={commentMutation} style={{
                                   marginBottom: '10px'
                                 }}>
-                                  <Input 
+                                  <input 
                                     type="text"
                                     onChange={e => {this.setState({
                                       commentToSubmit: e.target.value
@@ -135,24 +118,22 @@ export default class PostDetail extends React.Component {
                               )}
                             </Mutation>
 
-                            <ListGroup>
+                            <List>
                             {data.post.comments.map((comment, i) => (
-                              <ListGroupItem key={i}>
-                                <ListGroupItemHeading style={{
-                                  fontSize: '13px'
-                                }}>
+                              <List.Item key={i}>
+                                <List.Header>
                                   사용자: {comment.user}
-                                </ListGroupItemHeading>
+                                </List.Header>
                                 {comment.body}
-                              </ListGroupItem>
+                              </List.Item>
                             ))}
-                            </ListGroup>
+                            </List>
                           </React.Fragment>
                         )
                       }
                     }}
                   </Query>
-                </Jumbotron>
+                </Container>
               </div>
             )
           }

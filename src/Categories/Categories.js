@@ -1,7 +1,6 @@
 import React from 'react';
 import './Categories.css';
 import { Button } from 'reactstrap';
-import { Query } from 'react-apollo';
 
 export default class Categories extends React.Component {
   render() {
