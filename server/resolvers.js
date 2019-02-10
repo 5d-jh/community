@@ -1,18 +1,40 @@
+import { Types } from 'mongoose'
 import PostModel from './model-post';
 import UserModel from './model-user';
 
 class Resolvers {
   postsByRecent = async ({ skip, limit }) => {
-    return await PostModel.find({})
-      .sort('-date').skip(skip).limit(limit).lean()
-      .catch(err => new Error(err));
+    const posts =  await PostModel.find({})
+    .sort('-date').skip(skip).limit(limit).lean()
+    .catch(err => Error(err));
+
+    const users = await UserModel.find({
+      _id: {
+        $in: posts.map(post => Types.ObjectId(post.user))
+      }
+    }).lean();
+
+    const usersDict = {};
+
+    for (const users_idx in users) {
+      usersDict[String(users[users_idx]._id)] = {
+        userId: String(users[users_idx]._id),
+        username: String(users[users_idx].username)
+      };
+    }
+
+    for (const posts_idx in posts) {
+      posts[posts_idx].user = usersDict[posts[posts_idx].user];
+    }
+
+    return posts;
   }
 
   post = async ({ id }) => {
     const post = await PostModel.findById(id).lean()
     .catch(err => err);
 
-    return await UserModel.findById(post.user)
+    return await UserModel.findById(Types.ObjectId(post.user))
     .then(user => ({
       _id: post._id,
       title: post.title,
