@@ -13,7 +13,11 @@ const POST_LISTS = gql`
       body {
         preview
       }
+      user {
+        username
+      }
       postType
+      date
     }
   }
 `;
@@ -142,6 +146,8 @@ class MainList extends React.Component {
               title={post.title}
               body={post.body.preview}
               postId={post._id}
+              author={post.user.username}
+              date={post.date}
             />
           ))}
 

@@ -22,6 +22,7 @@ export default `
     body: PostBody!,
     user: UserBody!,
     tag: String,
+    date: String!,
     comments: [Comment] 
   }
 
