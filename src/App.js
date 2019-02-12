@@ -1,7 +1,7 @@
 import React from 'react';
 import client from './apollo-client';
 import { hot } from 'react-hot-loader/root'
-import { HashRouter as Router, Route} from 'react-router-dom';
+import { BrowserRouter, Route} from 'react-router-dom';
 import { ApolloProvider, ApolloConsumer } from 'react-apollo';
 import MainList from './MainList/MainList';
 import PostDetail from './Post/PostDetail';
@@ -38,7 +38,7 @@ class App extends React.Component {
     const { userSessionInfo } = this.state;
 
     return (
-      <Router>
+      <BrowserRouter>
         <React.Fragment>
           <div className="main-grid__navbar">
             <NavigationBar userSessionInfo={userSessionInfo} />
@@ -52,7 +52,7 @@ class App extends React.Component {
             </div>
           </div>
         </React.Fragment>
-      </Router>
+      </BrowserRouter>
     )
   }
 }

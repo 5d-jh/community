@@ -1,13 +1,15 @@
 import React from 'react';
+import { HashRouter as Route} from 'react-router-dom';
 import { Query, ApolloConsumer } from 'react-apollo';
 import gql from 'graphql-tag';
 import Cards from './Cards';
 import { Button } from 'semantic-ui-react';
 import './MainList.css';
+import queryString from 'query-string';
 
 const POST_LISTS = gql`
-  query PostsByRecent($skip: Int!, $limit: Int!) {
-    postsByRecent(skip: $skip, limit: $limit) {
+  query PostsByRecent($skip: Int!, $limit: Int!, $category: String) {
+    postsByRecent(skip: $skip, limit: $limit, category: $category) {
       _id
       title
       body {
@@ -105,6 +107,7 @@ class MainList extends React.Component {
     return (
       <div className="card-list" /*onScroll={this.isBottom}*/ id="cardList">
         <div className="card-list__grid" id="card-list-grid">
+          <Route path={"/:category"} component={<h1>asdf</h1>} />
 
           {newestPostId ? (
             <Query

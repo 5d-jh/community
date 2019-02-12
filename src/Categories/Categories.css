@@ -1,8 +1,13 @@
 .categories {
-  width: 50px;
+  width: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.category-button {
+  width: 100%;
+  text-align: center;
 }
 
 .category-button + .category-button {

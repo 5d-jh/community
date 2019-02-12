@@ -3,10 +3,10 @@ import PostModel from './model-post';
 import UserModel from './model-user';
 
 class Resolvers {
-  postsByRecent = async ({ skip, limit }) => {
-    const posts =  await PostModel.find({})
+  postsByRecent = async ({ skip, limit, category }) => {
+    const posts = await PostModel.find(category ? { category } : {})
     .sort('-date').skip(skip).limit(limit).lean()
-    .catch(err => Error(err));
+    .catch(err => Error(err))
 
     const users = await UserModel.find({
       _id: {

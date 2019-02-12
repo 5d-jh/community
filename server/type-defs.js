@@ -32,7 +32,7 @@ export default `
   }
 
   type Query {
-    postsByRecent(skip: Int!, limit: Int!): [Post]
+    postsByRecent(skip: Int!, limit: Int!, category: String): [Post]
 
     post(id: String!): Post
 
