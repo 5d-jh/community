@@ -1,6 +1,6 @@
 import React from 'react';
-import { HashRouter as Route} from 'react-router-dom';
-import { Query, ApolloConsumer } from 'react-apollo';
+import { HashRouter as Route, withRouter } from 'react-router-dom';
+import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import Cards from './Cards';
 import { Button } from 'semantic-ui-react';
@@ -25,8 +25,8 @@ const POST_LISTS = gql`
 `;
 
 const CHECK_NEW_POST = gql`
-  query CheckNewPost($lastPostId: String!) {
-    checkNewPost(lastPostId: $lastPostId) {
+  query CheckNewPost($lastPostId: String!, $category: String) {
+    checkNewPost(lastPostId: $lastPostId, category: $category) {
       isNewPost
       postList {
         _id
@@ -39,6 +39,7 @@ class MainList extends React.Component {
   state = {
     posts: [],
     page: 0,
+    category: null
   }
 
   newerPosts = 0;
@@ -79,13 +80,15 @@ class MainList extends React.Component {
 
   fetchOlderPosts = () => {
     const { client } = this.props;
-    const { posts, page } = this.state;
+    const { posts, page, category } = this.state;
+
 
     client.query({
       query: POST_LISTS,
       variables: {
         skip: page * 10 + this.newerPosts,
-        limit: 10
+        limit: 10,
+        category
       }
     })
     .then(({ data : { postsByRecent } }) => {
@@ -97,22 +100,38 @@ class MainList extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { location } = this.props;
+
+    if (nextProps.location.search !== location.search) {
+      this.setState({
+        posts: [],
+        page: 0,
+        category: queryString.parse(nextProps.location.search).category
+      }, this.fetchOlderPosts);
+    }
+  }
+
   componentDidMount() {
     this.fetchOlderPosts();
   }
 
   render() {
-    const { posts, newestPostId } = this.state;
+    const { posts, newestPostId, category } = this.state;
 
     return (
       <div className="card-list" /*onScroll={this.isBottom}*/ id="cardList">
         <div className="card-list__grid" id="card-list-grid">
+
           <Route path={"/:category"} component={<h1>asdf</h1>} />
 
           {newestPostId ? (
             <Query
               query={CHECK_NEW_POST}
-              variables={{lastPostId: newestPostId}}
+              variables={{ 
+                lastPostId: newestPostId,
+                category
+              }}
               pollInterval={2500}
             >
               {({loading, data, error}) => {
@@ -125,7 +144,6 @@ class MainList extends React.Component {
                 if (data) {
                   if (data.checkNewPost.postList.length !== 0) {
                     this.newerPosts = data.checkNewPost.postList.length;
-                    console.log(this.newerPosts)
                     return (
                       <Button
                         onClick={this.fetchNewerPosts(data.checkNewPost.postList.length)}
@@ -163,8 +181,4 @@ class MainList extends React.Component {
   }
 }
 
-export default () => (
-  <ApolloConsumer>
-    {client => <MainList client={client} />}
-  </ApolloConsumer>
-);
+export default withRouter(MainList);

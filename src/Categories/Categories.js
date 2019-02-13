@@ -2,6 +2,7 @@ import React from 'react';
 import './Categories.css';
 import { Button, Popup } from 'semantic-ui-react';
 import { Query } from 'react-apollo';
+import { Link, withRouter } from 'react-router-dom';
 import gql from 'graphql-tag';
 
 const CATEGORY = gql`
@@ -10,12 +11,14 @@ const CATEGORY = gql`
   }
 `;
 
-export default class Categories extends React.Component {
+class Categories extends React.Component {
   render() {
+    const { location } = this.props;
+
     return (
       <div className="categories">
         <Query query={CATEGORY}>
-          {({loading, data, error}) => {
+          {({ loading, data, error }) => {
             if (error) return error;
             if (loading) return "loading";
 
@@ -23,9 +26,9 @@ export default class Categories extends React.Component {
               return data.categories.map(category => (
                 <Popup
                   trigger={
-                    <Button className="category-button">
+                    <Link to={{ pathname: location.pathname, search: `?category=${category}` }}>
                       {String(category)}
-                    </Button>
+                    </Link>
                   }
                   content={category}
                   position="right center"
@@ -38,3 +41,5 @@ export default class Categories extends React.Component {
     )
   }
 }
+
+export default withRouter(Categories);

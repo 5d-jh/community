@@ -143,8 +143,11 @@ class Resolvers {
     .catch(err => err);
   }
 
-  checkNewPost = async ({lastPostId}) => {
-    return await PostModel.find({_id: {$gt: lastPostId}})
+  checkNewPost = async ({ lastPostId, category }) => {
+    return await PostModel.find({
+      _id: { $gt: lastPostId },
+      category
+    })
     .then(post => ({
       isNewPost: Boolean(post.length),
       postList: post

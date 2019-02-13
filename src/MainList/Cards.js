@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import { Card, Image } from 'semantic-ui-react';
 
-export default ({ cardType, title, body, postId, id, author, date}) => { 
+const Cards = ({ cardType, title, body, postId, id, author, date, location }) => { 
   if (!cardType) return null;
 
   const cardStyle = {
@@ -13,10 +14,17 @@ export default ({ cardType, title, body, postId, id, author, date}) => {
 
   if (cardType === 'article') {
     return (
-      <Card id={id} href={`#/view/${postId}`} style={cardStyle}>
+      <Card id={id} style={cardStyle}>
         <Card.Content>
           <Card.Meta>{author} &middot; {displayDate}</Card.Meta>
-          <Card.Header><h3>{title}</h3></Card.Header>
+          <Card.Header as="h3">
+            <Link to={{
+              pathname: `/view/${postId}`,
+              search: location.search
+            }}>
+              {title}
+            </Link>
+          </Card.Header>
           <Card.Description>{body}...</Card.Description>
         </Card.Content>
       </Card>
@@ -25,10 +33,17 @@ export default ({ cardType, title, body, postId, id, author, date}) => {
 
   if (cardType === 'snippet') {
     return (
-      <Card id={id} href={`#/view/${postId}`} style={cardStyle}>
+      <Card id={id} style={cardStyle}>
         <Card.Content>
           <Card.Meta>{author} &middot; {displayDate}</Card.Meta>
-          <Card.Description><h4>{body}</h4></Card.Description>
+          <Card.Description>
+            <Link to={{
+              pathname: `/view/${postId}`,
+              search: location.search
+            }}>
+              <h4>{body}</h4>
+            </Link>
+          </Card.Description>
         </Card.Content>
       </Card>
     )
@@ -43,3 +58,5 @@ export default ({ cardType, title, body, postId, id, author, date}) => {
     </Card>
   }
 }
+
+export default withRouter(Cards);

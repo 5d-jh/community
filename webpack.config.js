@@ -1,9 +1,9 @@
-// const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
+const path = require('path');
 
 module.exports = {
     entry: './src/index.js',
     output: {
-        path: __dirname + '/public',
+        path: path.resolve(__dirname, 'build', 'public'),
         filename: 'bundle.js'
     },
     module: {
@@ -18,6 +18,12 @@ module.exports = {
             }, {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
+            }, {
+                test: /\.(png|woff|woff2|eot|ttf|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: '100000'
+                }
             }
         ]
     }

@@ -40,7 +40,7 @@ export default `
 
     user(id: String!): UserBody
 
-    checkNewPost(lastPostId: String!): IsNewPost
+    checkNewPost(lastPostId: String!, category: String): IsNewPost
 
     categories: [String]!
   }

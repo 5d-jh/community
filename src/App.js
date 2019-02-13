@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import client from './apollo-client';
 import { hot } from 'react-hot-loader/root'
-import { BrowserRouter, Route} from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import { ApolloProvider, ApolloConsumer } from 'react-apollo';
 import MainList from './MainList/MainList';
 import PostDetail from './Post/PostDetail';
@@ -39,19 +39,21 @@ class App extends React.Component {
 
     return (
       <BrowserRouter>
-        <React.Fragment>
+        <Fragment>
           <div className="main-grid__navbar">
             <NavigationBar userSessionInfo={userSessionInfo} />
           </div>
           <div className="main-grid__flex">
             <Categories />
-            <MainList />
+            <ApolloConsumer>
+              {client => <MainList client={client} />}
+            </ApolloConsumer>
             <div className="main-grid__post-detail">
               <Route path={"/create_post"} component={CreatePost} />
               <Route path={"/view/:postId"} component={PostDetail} />
             </div>
           </div>
-        </React.Fragment>
+        </Fragment>
       </BrowserRouter>
     )
   }

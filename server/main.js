@@ -10,6 +10,7 @@ import cors from 'cors';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import os from 'os';
+import path from 'path';
 import process from 'process';
 import dotenv from 'dotenv';
 import gqlTypeDefs from './type-defs';
@@ -76,23 +77,31 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-app.use('/', express.static(__dirname + '/../public'));
+
+
 app.use('/api', graphqlHTTP({
     schema: buildSchema(gqlTypeDefs),
     rootValue: resolvers,
     graphiql: process.env.NODE_ENV === 'development',
 }));
+
 app.get('/auth/google', passport.authenticate('google', {
     scope: [
         'https://www.googleapis.com/auth/plus.login',
         'email'
     ]
 }));
+
 app.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: 'http://localhost:3000/',
     successRedirect: 'http://localhost:3000/'
 }));
+
 app.get('/auth/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 })
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
