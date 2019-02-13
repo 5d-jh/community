@@ -11,6 +11,7 @@ import Categories from './Categories/Categories'
 import gql from 'graphql-tag';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import { CommunityContextConsumer } from './store';
 
 const USER_SESSION_INFO = gql`
   query {
@@ -21,33 +22,25 @@ const USER_SESSION_INFO = gql`
 `;
 
 class App extends React.Component {
-  state = {
-    userSessionInfo: null
-  }
-
   componentDidMount() {
-    const { client } = this.props;
+    const { context: { actions }, client } = this.props;
 
     client.query({ query: USER_SESSION_INFO })
     .then(({ data: { userSessionInfo } }) => {
-      this.setState({ userSessionInfo });
-    })
+      actions.setValue({ userSessionInfo });
+    });
   }
 
   render() {
-    const { userSessionInfo } = this.state;
-
     return (
       <BrowserRouter>
         <Fragment>
           <div className="main-grid__navbar">
-            <NavigationBar userSessionInfo={userSessionInfo} />
+            <NavigationBar />
           </div>
           <div className="main-grid__flex">
             <Categories />
-            <ApolloConsumer>
-              {client => <MainList client={client} />}
-            </ApolloConsumer>
+              <MainList client={client} />
             <div className="main-grid__post-detail">
               <Route path={"/create_post"} component={CreatePost} />
               <Route path={"/view/:postId"} component={PostDetail} />
@@ -59,10 +52,14 @@ class App extends React.Component {
   }
 }
 
-export default hot(() => 
+export default hot(() =>
   <ApolloProvider client={client}>
     <ApolloConsumer>
-      {client => <App client={client} />}
+      {client => (
+        <CommunityContextConsumer>
+          {value => <App context={value} client={client} />}
+        </CommunityContextConsumer>
+      )}
     </ApolloConsumer>
   </ApolloProvider>
 );

@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Button, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { CommunityContextConsumer } from '../store';
 
 const NavigationBar = ({ userSessionInfo }) => {
   const googleIcon = (
@@ -30,26 +31,33 @@ const NavigationBar = ({ userSessionInfo }) => {
         <Link to="/">Community</Link>
       </Menu.Item>
       <Menu.Menu position="right">
-        {userSessionInfo ? (
-          <Fragment>
-            <Menu.Item>
-              <Link to="/create_post">글쓰기</Link>
-            </Menu.Item>
-            <Dropdown item text={userSessionInfo.username}>
-              <Dropdown.Menu right>
-                <Dropdown.Item color="link" href="/auth/logout">로그아웃</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <Dropdown item text="로그인">
-              <Dropdown.Menu right>
-                <Dropdown.Item icon={googleIcon} text="Google 계정으로 로그인" href="/auth/google" />
-              </Dropdown.Menu>
-            </Dropdown>
-          </Fragment>
-        )}
+        <CommunityContextConsumer>
+          {({ state }) => (
+            state.userSessionInfo ? (
+              <Fragment>
+                <Menu.Item>
+                  <Link to={{
+                    pathname: '/create_post',
+                    search: state.uriParameter
+                  }}>글쓰기</Link>
+                </Menu.Item>
+                <Dropdown item text={state.userSessionInfo.username}>
+                  <Dropdown.Menu right>
+                    <Dropdown.Item color="link" href="/auth/logout">로그아웃</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Dropdown item text="로그인">
+                  <Dropdown.Menu right>
+                    <Dropdown.Item icon={googleIcon} text="Google 계정으로 로그인" href="/auth/google" />
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Fragment>
+            )
+          )}
+        </CommunityContextConsumer>
       </Menu.Menu>
     </Menu>
   )

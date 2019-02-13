@@ -1,9 +1,10 @@
 import React from 'react';
 import './Categories.css';
-import { Button, Popup } from 'semantic-ui-react';
+import { Popup } from 'semantic-ui-react';
 import { Query } from 'react-apollo';
 import { Link, withRouter } from 'react-router-dom';
 import gql from 'graphql-tag';
+import { CommunityContextConsumer } from '../store';
 
 const CATEGORY = gql`
   query {
@@ -17,26 +18,35 @@ class Categories extends React.Component {
 
     return (
       <div className="categories">
-        <Query query={CATEGORY}>
-          {({ loading, data, error }) => {
-            if (error) return error;
-            if (loading) return "loading";
+        <CommunityContextConsumer>
+          {({ actions }) => (
+            <Query query={CATEGORY}>
+              {({ loading, data, error }) => {
+                if (error) return error;
+                if (loading) return "loading";
 
-            if (data) {
-              return data.categories.map(category => (
-                <Popup
-                  trigger={
-                    <Link to={{ pathname: location.pathname, search: `?category=${category}` }}>
-                      {String(category)}
-                    </Link>
-                  }
-                  content={category}
-                  position="right center"
-                />
-              ))
-            }
-          }}
-        </Query>
+                if (data) {
+                  return data.categories.map(category => (
+                    <Popup
+                      trigger={
+                        <Link
+                          to={{ pathname: location.pathname, search: `?category=${category}` }}
+                          onClick={() => {
+                            actions.setValue({ uriParameter: `?category=${category}` });
+                          }}
+                        >
+                          {String(category)}
+                        </Link>
+                      }
+                      content={category}
+                      position="right center"
+                    />
+                  ))
+                }
+              }}
+            </Query>
+          )}
+        </CommunityContextConsumer>
       </div>
     )
   }
