@@ -3,9 +3,9 @@ import client from './apollo-client';
 import { hot } from 'react-hot-loader/root'
 import { BrowserRouter, Route } from 'react-router-dom';
 import { ApolloProvider, ApolloConsumer } from 'react-apollo';
-import MainList from './MainList/MainList';
-import PostDetail from './Post/PostDetail';
-import NavigationBar from './Navbar/NavigationBar';
+import MainList from './LeftPane/MainList';
+import PostDetail from './RightPane/PostDetail';
+import NavigationBar from './TopPane/NavigationBar';
 import CreatePost from './Post/CreatePost';
 import Categories from './Categories/Categories'
 import gql from 'graphql-tag';
